@@ -11,78 +11,148 @@ export async function GET(request) {
   }
 
   try {
-    // Primeira tentativa: URL direta com confirm
-    let downloadUrl = `https://drive.google.com/uc?export=download&id=${id}&confirm=t`;
-    
-    let response = await fetch(downloadUrl, {
-      redirect: 'follow',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Referer': 'https://drive.google.com/',
-        'Accept': '*/*',
-      }
-    });
+    // Múltiplas URLs para tentar
+    const urls = [
+      `https://drive.google.com/uc?export=download&id=${id}&confirm=t`,
+      `https://docs.google.com/uc?export=download&id=${id}&confirm=t`,
+      `https://drive.google.com/u/0/uc?id=${id}&export=download&confirm=t`,
+      `https://drive.google.com/file/d/${id}/view?usp=sharing`,
+    ];
 
-    // Se ainda redirecionou para página de confirmação, tenta método alternativo
-    if (response.url.includes('drive.google.com') && response.headers.get('content-type')?.includes('text/html')) {
-      // Método alternativo para arquivos grandes
-      downloadUrl = `https://docs.google.com/uc?export=download&id=${id}&confirm=t`;
-      
-      response = await fetch(downloadUrl, {
-        redirect: 'follow',
+    let finalResponse = null;
+    let finalUrl = null;
+
+    for (const url of urls) {
+      try {
+        console.log(`Tentando URL: ${url}`);
+        
+        const response = await fetch(url, {
+          redirect: 'follow',
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Cache-Control': 'max-age=0',
+            'Referer': 'https://drive.google.com/',
+          }
+        });
+
+        console.log(`Status: ${response.status}, Content-Type: ${response.headers.get('content-type')}`);
+
+        // Se não é HTML, provavelmente é o arquivo
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('text/html') && response.ok) {
+          finalResponse = response;
+          finalUrl = url;
+          console.log(`Sucesso com URL: ${url}`);
+          break;
+        }
+
+        // Se é HTML, tenta extrair link direto
+        if (contentType.includes('text/html') && response.ok) {
+          const html = await response.text();
+          
+          // Procura por diferentes padrões de download
+          const patterns = [
+            /https:\/\/doc-[^"'\s]*\.googleusercontent\.com[^"'\s]*/g,
+            /https:\/\/drive\.google\.com\/uc\?export=download[^"'\s]*/g,
+            /https:\/\/docs\.google\.com\/uc\?export=download[^"'\s]*/g,
+          ];
+
+          for (const pattern of patterns) {
+            const matches = html.match(pattern);
+            if (matches && matches[0]) {
+              console.log(`Link direto encontrado: ${matches[0]}`);
+              
+              const directResponse = await fetch(matches[0], {
+                headers: {
+                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                  'Referer': 'https://drive.google.com/',
+                }
+              });
+
+              if (directResponse.ok && !directResponse.headers.get('content-type')?.includes('text/html')) {
+                finalResponse = directResponse;
+                finalUrl = matches[0];
+                break;
+              }
+            }
+          }
+          
+          if (finalResponse) break;
+        }
+
+      } catch (error) {
+        console.log(`Erro com URL ${url}:`, error.message);
+        continue;
+      }
+    }
+
+    // Se nenhuma URL funcionou, retorna erro
+    if (!finalResponse || !finalResponse.ok) {
+      return new Response('Erro: Arquivo não acessível. Verifique se está público e tente novamente.', { 
+        status: 404,
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-          'Referer': 'https://drive.google.com/',
-          'Accept': '*/*',
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Access-Control-Allow-Origin': '*'
         }
       });
     }
 
-    // Se ainda não conseguiu, tenta buscar o link direto no HTML
-    if (response.headers.get('content-type')?.includes('text/html')) {
-      const html = await response.text();
+    // Se ainda retornou HTML, força download anyway
+    const contentType = finalResponse.headers.get('content-type') || 'application/octet-stream';
+    if (contentType.includes('text/html')) {
+      // Força como vídeo se o ID parece ser de vídeo
+      const forceContentType = 'video/mp4';
       
-      // Procura pelo link de download direto no HTML
-      const downloadMatch = html.match(/https:\/\/doc-[^"]*googleusercontent\.com[^"]*/);
+      const headers = new Headers();
+      headers.set('Content-Type', forceContentType);
+      headers.set('Access-Control-Allow-Origin', '*');
+      headers.set('Content-Disposition', 'inline');
+      headers.set('Cache-Control', 'public, max-age=3600');
       
-      if (downloadMatch) {
-        response = await fetch(downloadMatch[0], {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-          }
-        });
-      }
+      return new Response(finalResponse.body, {
+        status: 200,
+        headers: headers,
+      });
     }
 
-    // Se ainda não conseguiu o arquivo direto, retorna erro
-    if (!response.ok || response.headers.get('content-type')?.includes('text/html')) {
-      return new Response('Erro: Não foi possível acessar o arquivo diretamente. Verifique se o arquivo está público.', { status: 404 });
-    }
-
-    // Configura os cabeçalhos para funcionar como proxy
+    // Configura headers para o arquivo encontrado
     const headers = new Headers();
     headers.set('Access-Control-Allow-Origin', '*');
-    headers.set('Content-Type', response.headers.get('content-type') || 'application/octet-stream');
+    headers.set('Content-Type', contentType);
     
-    // Adiciona headers para melhor compatibilidade
-    const contentLength = response.headers.get('content-length');
+    const contentLength = finalResponse.headers.get('content-length');
     if (contentLength) {
       headers.set('Content-Length', contentLength);
     }
     
-    // Headers para streaming de vídeo
     headers.set('Accept-Ranges', 'bytes');
     headers.set('Cache-Control', 'public, max-age=3600');
     headers.set('Content-Disposition', 'inline');
     
-    // Retorna o arquivo
-    return new Response(response.body, {
+    console.log(`Retornando arquivo. Tipo: ${contentType}, Tamanho: ${contentLength || 'desconhecido'}`);
+    
+    return new Response(finalResponse.body, {
       status: 200,
       headers: headers,
     });
     
   } catch (error) {
-    console.log('Erro:', error);
-    return new Response('Erro interno', { status: 500 });
+    console.error('Erro geral:', error);
+    return new Response(`Erro interno: ${error.message}`, { 
+      status: 500,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
   }
 }
