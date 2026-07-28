@@ -288,6 +288,7 @@ export default function AppCarrossel() {
             gerandoCapa={gerandoCapa}
             erroCapa={erroCapa}
             capaEstilo={dados.capaEstilo}
+            legenda={legenda}
             onVoltar={() => setPasso(3)}
             onNovo={novoCarrossel}
           />

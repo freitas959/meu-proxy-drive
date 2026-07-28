@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import CardCanvas from "./CardCanvas";
+import PreviaFeed from "./PreviaFeed";
 import { renderizarCard, carregarFontes, canvasParaBlob, baixarCanvas } from "@/lib/render";
 import s from "@/app/app/wizard.module.css";
 
@@ -20,6 +21,7 @@ export default function Passo4Imagens({
   gerandoCapa,
   erroCapa,
   capaEstilo,
+  legenda,
   onVoltar,
   onNovo,
 }) {
@@ -123,12 +125,8 @@ export default function Passo4Imagens({
       <div className={s.resultadoTopo}>
         <span className={s.resultadoTitulo}>Slides prontos</span>
         <div className="step-actions-right">
-          <button
-            type="button"
-            className="btn"
-            onClick={() => setFeedAberto((v) => !v)}
-          >
-            {feedAberto ? "Fechar prévia" : "Prévia no feed"}
+          <button type="button" className="btn" onClick={() => setFeedAberto(true)}>
+            Prévia no feed
           </button>
           <button
             type="button"
@@ -159,28 +157,20 @@ export default function Passo4Imagens({
       )}
 
       {feedAberto && (
-        <div className={s.feedGrade}>
-          {roteiro.map((card, i) => (
-            <div key={i} className={s.feedItem}>
-              <CardCanvas
-                card={card}
-                template={template}
-                paleta={paleta}
-                fontes={fontes}
-                tamanho={tamanho}
-                indice={i}
-                total={total}
-                imagem={imagens[i] || null}
-                handle={handle}
-                ehCapa={i === 0}
-                escala={0.26}
-              />
-            </div>
-          ))}
-        </div>
+        <PreviaFeed
+          roteiro={roteiro}
+          template={template}
+          paleta={paleta}
+          fontes={fontes}
+          tamanho={tamanho}
+          handle={handle}
+          imagens={imagens}
+          legenda={legenda}
+          onFechar={() => setFeedAberto(false)}
+        />
       )}
 
-      <div className={s.gradeResultado} style={{ marginTop: feedAberto ? 18 : 0 }}>
+      <div className={s.gradeResultado}>
         {roteiro.map((card, i) => {
           const capaPendente = i === 0 && gerandoCapa;
           return (

@@ -899,25 +899,6 @@ details[open] > .detalhesResumo::before {
   line-height: 1.45;
 }
 
-/* prévia no feed */
-.feedGrade {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding: 16px;
-  background: #17140f;
-  border-radius: 10px;
-  scroll-snap-type: x mandatory;
-}
-
-.feedItem {
-  flex: none;
-  width: 240px;
-  scroll-snap-align: center;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
 /* ================= responsivo ================= */
 
 @media (max-width: 900px) {
