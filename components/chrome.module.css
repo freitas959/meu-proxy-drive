@@ -1,0 +1,257 @@
+/* ---------- cabeçalho ---------- */
+
+.header {
+  background: var(--bg);
+  border-bottom: 2px solid var(--ink);
+}
+
+.headerInner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 21px;
+  letter-spacing: -0.02em;
+  margin-right: auto;
+}
+
+.brandMark {
+  display: block;
+  flex: none;
+}
+
+.brandStrong {
+  font-weight: 700;
+}
+
+.brandLight {
+  font-weight: 400;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.navBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 2px solid var(--ink);
+  border-radius: 9px;
+  background: var(--paper);
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.navBtn:hover {
+  background: #f8f4ec;
+}
+
+.navBtn[aria-current="page"] {
+  background: var(--ink);
+  color: #fff;
+}
+
+.credits {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid var(--orange);
+  border-radius: 9px;
+  background: var(--orange-soft);
+  color: var(--orange-dark);
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.creditsLow {
+  border-color: #c02718;
+  background: #fde8e5;
+  color: #a81f12;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 2px solid var(--ink);
+  border-radius: 9px;
+  background: var(--paper);
+  padding: 8px 11px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.madeWith {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9px;
+  background: var(--ink);
+  color: #fff;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- trilha de passos ---------- */
+
+.stepper {
+  border-bottom: 2px solid var(--ink);
+  background: var(--bg);
+  overflow-x: auto;
+}
+
+.stepperInner {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: 640px;
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-40);
+  flex: none;
+}
+
+.stepBullet {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  background: #d6d0c4;
+  color: #7d776e;
+  flex: none;
+}
+
+.stepDone .stepBullet {
+  background: var(--ink);
+  color: #fff;
+}
+
+.stepDone {
+  color: var(--ink);
+}
+
+.stepActive .stepBullet {
+  background: var(--orange);
+  color: #fff;
+  box-shadow: 0 0 0 4px var(--orange-soft);
+}
+
+.stepActive {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.stepLine {
+  flex: 1 1 auto;
+  height: 2px;
+  background: #cec8bb;
+  margin: 0 14px;
+  min-width: 30px;
+}
+
+.stepLineDone {
+  background: var(--ink);
+}
+
+button.step:not(:disabled) {
+  cursor: pointer;
+}
+
+button.step:disabled {
+  cursor: default;
+}
+
+/* ---------- rodapé ---------- */
+
+.footer {
+  margin-top: 56px;
+  background: var(--ink);
+  color: #e8e3da;
+}
+
+.footerInner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 26px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+.footerBrand {
+  font-weight: 700;
+  color: #fff;
+}
+
+.support {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  background: #1fbf6b;
+  color: #fff;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  z-index: 40;
+}
+
+.support:hover {
+  background: #17a85c;
+}
+
+@media (max-width: 860px) {
+  .brand {
+    margin-right: 0;
+  }
+
+  .headerInner {
+    justify-content: center;
+  }
+
+  .support {
+    right: 12px;
+    bottom: 12px;
+    padding: 10px 16px;
+  }
+}

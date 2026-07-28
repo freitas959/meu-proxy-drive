@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CarrosseIA
 
-## Getting Started
+Gerador de carrosséis de Instagram com IA, em Next.js. O fluxo tem quatro
+passos: escolher template → descrever o tema → ajustar o roteiro → baixar as
+imagens.
 
-First, run the development server:
+## Rodando
 
 ```bash
+npm install
+cp .env.example .env.local   # e preencha ANTHROPIC_API_KEY
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+O app fica em `/app`. Sem `ANTHROPIC_API_KEY` a interface funciona normalmente,
+mas as rotas de geração respondem 503 com uma mensagem explicando.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Como está montado
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/
+  page.js              landing
+  app/page.js          o wizard de 4 passos (orquestra o estado)
+  aprendizado|planos|projetos/
+  api/roteiro          Claude escreve o roteiro (tool use → JSON)
+  api/capa             Claude desenha a ilustração da capa em SVG
+  api/importar         distribui um texto que o usuário já tem
+  api/materia          lê um link e extrai o texto da página
+  api/stream           proxy do Google Drive (pré-existente, fora do app)
+components/            chrome + os quatro passos + o canvas de prévia
+lib/
+  templates.js         catálogo dos 19 templates (paleta, fontes, selos)
+  render.js            renderizador dos cards em canvas
+  store.js             créditos e projetos (localStorage)
+```
 
-## Learn More
+### Renderização
 
-To learn more about Next.js, take a look at the following resources:
+Os cards são desenhados em `<canvas>` a 1080px de largura (1:1 ou 4:5) e
+exibidos reduzidos por CSS — a prévia na tela é exatamente o PNG que sai no
+download. O renderizador cuida de quebra de linha, ajuste automático do corpo
+da fonte, destaque de termos marcados com `**asteriscos**`, selo, rodapé com
+paginação e botões.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Capas sem foto ganham um fundo abstrato gerado proceduralmente a partir da
+paleta do template, com semente determinística — o mesmo template produz sempre
+a mesma cena.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+As webfonts entram por `<link>` no layout (e não por `next/font`) porque o
+canvas precisa delas registradas em `document.fonts` sob o nome da família.
+O usuário também pode subir a própria fonte, que é registrada via `FontFace`.
 
-## Deploy on Vercel
+### Créditos
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Contabilizados no `localStorage` (`lib/store.js`), 30 iniciais. Gerar roteiro
+custa 3, importar texto 1 e a capa ilustrada 10. Baixar não custa nada, já que
+o desenho acontece no navegador. O débito acontece antes da chamada e é
+estornado se ela falhar. Trocar por contas de verdade é uma mudança contida
+nesse módulo.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Limitações conhecidas
+
+- Créditos e projetos são por navegador; não há autenticação.
+- Os projetos salvos guardam o roteiro e os ajustes, não as imagens — elas são
+  redesenhadas sob demanda para não estourar a cota do `localStorage`.
+- `/api/materia` depende de a página alvo permitir leitura pelo servidor;
+  paywall e bloqueio de bot fazem o app seguir só com o tema digitado.
+- Os planos em `/planos` apenas ajustam o saldo local: não há cobrança ligada.

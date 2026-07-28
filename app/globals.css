@@ -1,13 +1,25 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f2ede4;
+  --paper: #ffffff;
+  --ink: #111111;
+  --ink-60: #55504a;
+  --ink-40: #8a837a;
+  --orange: #ee5b2b;
+  --orange-dark: #d94a1c;
+  --orange-soft: #fdeee7;
+  --lime: #d8f34a;
+  --radius: 10px;
+  --shadow: 4px 4px 0 var(--ink);
+  --shadow-sm: 3px 3px 0 var(--ink);
+  --font-ui: "Familjen Grotesk", "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-display: "Anton", "Familjen Grotesk", Impact, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html,
@@ -17,17 +29,13 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
 }
 
 a {
@@ -35,8 +43,243 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* ---------- primitivas ---------- */
+
+.wrap {
+  width: 100%;
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--ink-60);
+  line-height: 1.5;
+}
+
+.hint strong {
+  color: var(--ink);
+}
+
+/* botões */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--paper);
+  padding: 11px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.12s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: #f8f4ec;
+}
+
+.btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--orange);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--orange-dark);
+}
+
+.btn-primary:active:not(:disabled) {
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.btn-dashed {
+  border: 2px dashed var(--orange);
+  color: var(--orange);
+  background: var(--paper);
+  font-weight: 700;
+}
+
+.btn-dashed:hover:not(:disabled) {
+  background: var(--orange-soft);
+}
+
+.btn-dark {
+  background: var(--ink);
+  color: #fff;
+}
+
+.btn-dark:hover:not(:disabled) {
+  background: #2a2a2a;
+}
+
+.btn-sm {
+  padding: 7px 12px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+/* cards / painéis */
+.panel {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.field {
+  width: 100%;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--paper);
+  padding: 12px 14px;
+  font-size: 15px;
+}
+
+.field::placeholder {
+  color: var(--ink-40);
+}
+
+.field:focus {
+  outline: none;
+  border-color: var(--orange);
+}
+
+textarea.field {
+  resize: vertical;
+  min-height: 90px;
+  line-height: 1.5;
+}
+
+/* pill "PASSO N DE 4" */
+.step-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid var(--orange);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--orange);
+  background: var(--orange-soft);
+}
+
+.step-pill::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+}
+
+.page-title {
+  font-size: clamp(30px, 5vw, 42px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  margin: 16px 0 10px;
+}
+
+.page-sub {
+  font-size: 15px;
+  color: var(--ink-60);
+  max-width: 620px;
+  line-height: 1.55;
+}
+
+.page-sub strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* barra de ações do rodapé de cada passo */
+.step-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 28px 0 8px;
+}
+
+.step-actions-right {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.divider-dashed {
+  border: none;
+  border-top: 2px dashed #d8d2c6;
+  margin: 22px 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 640px) {
+  .step-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .step-actions-right {
+    flex-direction: column;
+  }
+
+  .step-actions .btn {
+    width: 100%;
   }
 }
