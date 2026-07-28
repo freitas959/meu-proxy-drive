@@ -9,6 +9,11 @@ const MIN_SLIDES = 3;
 const MAX_SLIDES = 10;
 const TAMANHO_MAX_ANEXO = 4 * 1024 * 1024;
 
+const ESTILOS_CAPA = [
+  { id: "foto", nome: "Foto realista", nota: "cena fotográfica, como no feed" },
+  { id: "ilustracao", nome: "Ilustração", nota: "desenho vetorial na sua paleta" },
+];
+
 function lerComoDataURL(arquivo) {
   return new Promise((resolve, reject) => {
     const leitor = new FileReader();
@@ -290,6 +295,24 @@ export default function Passo2Tema({
 
         {dados.capaModo === "ia" && (
           <>
+            <span className={`mono-label ${s.rotulo}`}>Estilo da capa</span>
+            <div className={s.duasColunas}>
+              {ESTILOS_CAPA.map((estilo) => (
+                <button
+                  key={estilo.id}
+                  type="button"
+                  className={`${s.estiloBtn} ${
+                    dados.capaEstilo === estilo.id ? s.estiloBtnAtivo : ""
+                  }`}
+                  onClick={() => atualizar({ capaEstilo: estilo.id })}
+                  aria-pressed={dados.capaEstilo === estilo.id}
+                >
+                  <span className={s.estiloNome}>{estilo.nome}</span>
+                  <span className={s.estiloNota}>{estilo.nota}</span>
+                </button>
+              ))}
+            </div>
+
             <textarea
               className="field"
               style={{ marginTop: 12 }}

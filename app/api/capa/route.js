@@ -1,4 +1,5 @@
 import { getCliente, semChave, MODELO, extrairFerramenta } from "@/lib/anthropic";
+import { gerarImagem, promptDeCapa, temChaveGemini, aspectoDe } from "@/lib/gemini";
 
 export const maxDuration = 90;
 
@@ -53,17 +54,58 @@ function svgValido(svg) {
   return null;
 }
 
+/** Foto realista pelo Gemini. Devolve a imagem como data URL pro canvas usar. */
+async function capaEmFoto(cena, paleta, tamanho) {
+  if (!temChaveGemini()) {
+    return Response.json(
+      {
+        erro:
+          "GEMINI_API_KEY não configurada. Defina a variável de ambiente ou escolha a capa em ilustração.",
+      },
+      { status: 503 }
+    );
+  }
+
+  const { midia, dados } = await gerarImagem({
+    prompt: promptDeCapa({ cena, paleta }),
+    aspecto: aspectoDe(tamanho),
+  });
+
+  return Response.json({ imagem: `data:${midia};base64,${dados}`, estilo: "foto" });
+}
+
 export async function POST(req) {
+  let corpo;
+  try {
+    corpo = await req.json();
+  } catch {
+    return Response.json({ erro: "Requisição inválida." }, { status: 400 });
+  }
+
+  const { cena = "", paleta = {}, tema = "", estilo = "ilustracao", tamanho } = corpo;
+  const descricao = cena.trim() || tema.trim();
+
+  if (!descricao) {
+    return Response.json({ erro: "Descreva a cena da capa." }, { status: 400 });
+  }
+
+  if (estilo === "foto") {
+    try {
+      return await capaEmFoto(descricao, paleta, tamanho);
+    } catch (erro) {
+      console.error("[capa/foto]", erro);
+      return Response.json(
+        { erro: erro?.message || "Falha ao gerar a foto da capa." },
+        { status: 502 }
+      );
+    }
+  }
+
   const cli = getCliente();
   if (!cli) return semChave();
 
   try {
-    const { cena = "", paleta = {}, tema = "" } = await req.json();
-    if (!cena.trim() && !tema.trim()) {
-      return Response.json({ erro: "Descreva a cena da capa." }, { status: 400 });
-    }
-
-    const pedido = `CENA: ${cena.trim() || tema.trim()}
+    const pedido = `CENA: ${descricao}
 
 PALETA (use só estas cores e tons derivados delas):
 - fundo: ${paleta.fundo || "#0d0d0d"}
@@ -87,7 +129,12 @@ Desenhe e entregue pela ferramenta.`;
       return Response.json({ erro: problema }, { status: 502 });
     }
 
-    return Response.json({ svg: dados.svg });
+    // Os dois estilos devolvem o mesmo formato: uma data URL pronta pro canvas.
+    const base64 = Buffer.from(dados.svg, "utf8").toString("base64");
+    return Response.json({
+      imagem: `data:image/svg+xml;base64,${base64}`,
+      estilo: "ilustracao",
+    });
   } catch (erro) {
     console.error("[capa]", erro);
     return Response.json({ erro: erro?.message || "Falha ao gerar a capa." }, { status: 500 });

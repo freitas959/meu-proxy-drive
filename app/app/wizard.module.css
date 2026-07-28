@@ -433,6 +433,33 @@
   color: #fff;
 }
 
+.estiloBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--paper);
+  padding: 11px 14px;
+  text-align: left;
+}
+
+.estiloBtnAtivo {
+  background: var(--orange);
+  color: #fff;
+}
+
+.estiloNome {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.estiloNota {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
 .refsLinha {
   display: flex;
   align-items: center;

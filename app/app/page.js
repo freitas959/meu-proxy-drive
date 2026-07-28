@@ -15,17 +15,10 @@ const DADOS_INICIAIS = {
   slides: 6,
   imagens: {},
   capaModo: "ia",
+  capaEstilo: "foto",
   capaPrompt: "",
   referencias: [],
 };
-
-/** SVG → data URL utilizável como imagem de fundo no canvas. */
-function svgParaDataURL(svg) {
-  const bytes = new TextEncoder().encode(svg);
-  let binario = "";
-  for (const b of bytes) binario += String.fromCharCode(b);
-  return `data:image/svg+xml;base64,${btoa(binario)}`;
-}
 
 async function postar(rota, corpo) {
   const resposta = await fetch(rota, {
@@ -186,12 +179,14 @@ export default function AppCarrossel() {
 
     setGerandoCapa(true);
     try {
-      const { svg } = await postar("/api/capa", {
+      const { imagem } = await postar("/api/capa", {
         cena: roteiro[0]?.promptCapa || "",
         tema: dados.tema,
         paleta,
+        estilo: dados.capaEstilo,
+        tamanho: tamanho || "retrato",
       });
-      atualizarDados({ imagens: { ...dados.imagens, 0: svgParaDataURL(svg) } });
+      atualizarDados({ imagens: { ...dados.imagens, 0: imagem } });
     } catch (falha) {
       estornar(CUSTOS.capaIA);
       setErroCapa(falha.message);
@@ -273,6 +268,7 @@ export default function AppCarrossel() {
             setRoteiro={setRoteiro}
             capaIA={capaIA}
             setCapaIA={setCapaIA}
+            capaEstilo={dados.capaEstilo}
             temUploadCapa={dados.capaModo === "upload"}
             onVoltar={() => setPasso(2)}
             onGerar={gerarImagens}
@@ -291,6 +287,7 @@ export default function AppCarrossel() {
             imagens={dados.imagens}
             gerandoCapa={gerandoCapa}
             erroCapa={erroCapa}
+            capaEstilo={dados.capaEstilo}
             onVoltar={() => setPasso(3)}
             onNovo={novoCarrossel}
           />

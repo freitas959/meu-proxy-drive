@@ -23,7 +23,7 @@ app/
   app/page.js          o wizard de 4 passos (orquestra o estado)
   aprendizado|planos|projetos/
   api/roteiro          Claude escreve o roteiro (tool use → JSON)
-  api/capa             Claude desenha a ilustração da capa em SVG
+  api/capa             capa da IA nos dois estilos (foto ou ilustração)
   api/importar         distribui um texto que o usuário já tem
   api/materia          lê um link e extrai o texto da página
   api/stream           proxy do Google Drive (pré-existente, fora do app)
@@ -42,9 +42,25 @@ download. O renderizador cuida de quebra de linha, ajuste automático do corpo
 da fonte, destaque de termos marcados com `**asteriscos**`, selo, rodapé com
 paginação e botões.
 
-Capas sem foto ganham um fundo abstrato gerado proceduralmente a partir da
+Capas sem imagem ganham um fundo abstrato gerado proceduralmente a partir da
 paleta do template, com semente determinística — o mesmo template produz sempre
 a mesma cena.
+
+### A capa da IA
+
+São dois estilos, escolhidos no passo 2, e ambos chegam ao canvas como data URL
+pelo mesmo caminho das fotos que o usuário sobe:
+
+- **Foto realista** — Gemini Flash Image ("nano banana"). Usamos o Flash e não o
+  Pro porque o diferencial do Pro é desenhar texto dentro da imagem, e o texto
+  dos cards é desenhado pelo nosso canvas, com tipografia nítida e editável. O
+  prompt pede o terço inferior escuro e vazio, que é onde o título cai.
+- **Ilustração** — Claude devolve um SVG restrito a primitivas, validado no
+  servidor (sem `<text>`, `<image>`, script ou referência externa) antes de ir
+  pro cliente.
+
+O app funciona sem `GEMINI_API_KEY`: só a opção de foto responde 503, com uma
+mensagem sugerindo a ilustração.
 
 As webfonts entram por `<link>` no layout (e não por `next/font`) porque o
 canvas precisa delas registradas em `document.fonts` sob o nome da família.

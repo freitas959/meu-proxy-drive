@@ -33,6 +33,7 @@ export default function Passo3Roteiro({
   setRoteiro,
   capaIA,
   setCapaIA,
+  capaEstilo,
   temUploadCapa,
   onVoltar,
   onGerar,
@@ -282,14 +283,26 @@ export default function Passo3Roteiro({
                         Gerar capa com IA?
                       </label>
                       <p className="hint">
-                        A capa (card 1) é uma <strong>ilustração desenhada pela IA</strong> na
-                        sua paleta ({CUSTOS.capaIA} créd. ao gerar).
+                        {capaEstilo === "foto" ? (
+                          <>
+                            A capa (card 1) é uma <strong>foto gerada pela IA</strong> a
+                            partir da cena abaixo ({CUSTOS.capaIA} créd. ao gerar).
+                          </>
+                        ) : (
+                          <>
+                            A capa (card 1) é uma{" "}
+                            <strong>ilustração desenhada pela IA</strong> na sua paleta (
+                            {CUSTOS.capaIA} créd. ao gerar).
+                          </>
+                        )}
                       </p>
 
                       {capaIA && (
                         <details className={s.detalhes}>
                           <summary className={s.detalhesResumo}>
-                            Prompt da ilustração da capa (IA)
+                            {capaEstilo === "foto"
+                              ? "Prompt da foto da capa (IA)"
+                              : "Prompt da ilustração da capa (IA)"}
                           </summary>
                           <textarea
                             className="field"

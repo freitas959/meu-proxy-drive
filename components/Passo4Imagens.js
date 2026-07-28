@@ -19,6 +19,7 @@ export default function Passo4Imagens({
   imagens,
   gerandoCapa,
   erroCapa,
+  capaEstilo,
   onVoltar,
   onNovo,
 }) {
@@ -152,7 +153,8 @@ export default function Passo4Imagens({
       {erroCapa && (
         <p className={s.erro}>
           A capa da IA falhou ({erroCapa}). Os outros cards estão prontos — dá pra voltar ao
-          roteiro e tentar de novo, ou seguir com a capa só de texto.
+          roteiro e tentar de novo, trocar o estilo da capa no passo anterior, ou seguir com
+          a capa só de texto.
         </p>
       )}
 
@@ -189,9 +191,15 @@ export default function Passo4Imagens({
               {capaPendente ? (
                 <div className={s.gerando}>
                   <span className={s.gerandoQuadrado} />
-                  <span className={s.gerandoTitulo}>Aguarde: criando capa com Claude.</span>
+                  <span className={s.gerandoTitulo}>
+                    {capaEstilo === "foto"
+                      ? "Aguarde: fotografando a capa."
+                      : "Aguarde: criando capa com Claude."}
+                  </span>
                   <span className={s.gerandoNota}>
-                    a IA está desenhando o card completo (~1 min · pode deixar rolando)
+                    {capaEstilo === "foto"
+                      ? "a IA está gerando a imagem (~10s · pode deixar rolando)"
+                      : "a IA está desenhando o card completo (~1 min · pode deixar rolando)"}
                   </span>
                 </div>
               ) : (
