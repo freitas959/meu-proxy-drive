@@ -1,6 +1,7 @@
 -- ============================================================================
 -- CarrosseIA — esquema inicial
--- Cole inteiro no SQL Editor do Supabase e execute uma vez.
+-- Já aplicado no projeto oqmonbwiwqyxtphrglsg. Este arquivo é o registro do
+-- que está lá e serve para recriar o banco do zero, na ordem.
 -- ============================================================================
 
 -- ---------------------------------------------------------------- tabelas ---
@@ -84,8 +85,12 @@ create trigger criar_perfil
 
 -- ------------------------------------------------------------- créditos -----
 
--- Débito atômico. O `for update` trava a linha do perfil: duas requisições
--- simultâneas do mesmo usuário não conseguem gastar o mesmo saldo duas vezes.
+-- Débito atômico, amarrado a quem chamou. O `for update` trava a linha do
+-- perfil: duas requisições simultâneas do mesmo usuário não conseguem gastar
+-- o mesmo saldo duas vezes.
+--
+-- Esta pode ficar exposta ao cliente. O pior que um usuário faz chamando
+-- direto é queimar o próprio saldo — não existe caminho para ganhar crédito.
 create or replace function public.debitar(
   p_quantia   integer,
   p_motivo    text,
@@ -162,18 +167,29 @@ end;
 $$;
 
 -- Devolve o crédito quando a chamada à IA falha depois do débito.
-create or replace function public.estornar(p_quantia integer, p_motivo text)
+--
+-- Esta NÃO pode ficar exposta ao cliente, e por isso recebe o usuário por
+-- parâmetro em vez de usar auth.uid(): quem chama é o servidor, com a service
+-- role, depois de já ter validado a sessão. Se ela estivesse concedida a
+-- `authenticated`, qualquer pessoa logada chamaria /rest/v1/rpc/estornar com
+-- a quantia que quisesse e o sistema de créditos deixaria de existir.
+drop function if exists public.estornar(integer, text);
+
+create or replace function public.estornar(
+  p_usuario uuid,
+  p_quantia integer,
+  p_motivo  text
+)
 returns integer
 language plpgsql
 security definer
 set search_path = public
 as $$
 declare
-  v_usuario uuid := auth.uid();
-  v_saldo   integer;
+  v_saldo integer;
 begin
-  if v_usuario is null then
-    raise exception 'sem_sessao' using errcode = '28000';
+  if p_usuario is null then
+    raise exception 'usuario_ausente' using errcode = '22023';
   end if;
 
   if p_quantia is null or p_quantia <= 0 then
@@ -183,7 +199,7 @@ begin
   update public.perfis
      set creditos = creditos + p_quantia,
          atualizado_em = now()
-   where id = v_usuario
+   where id = p_usuario
   returning creditos into v_saldo;
 
   if v_saldo is null then
@@ -191,7 +207,7 @@ begin
   end if;
 
   insert into public.transacoes (usuario_id, quantia, motivo)
-  values (v_usuario, p_quantia, p_motivo);
+  values (p_usuario, p_quantia, p_motivo);
 
   return v_saldo;
 end;
@@ -202,6 +218,7 @@ $$;
 create or replace function public.tocar_atualizado_em()
 returns trigger
 language plpgsql
+set search_path = public
 as $$
 begin
   new.atualizado_em := now();
@@ -221,45 +238,67 @@ alter table public.projetos   enable row level security;
 alter table public.transacoes enable row level security;
 alter table public.config     enable row level security;
 
--- Perfis: cada um vê e edita o seu. Créditos NÃO entram aqui — só as funções
--- acima mexem no saldo, e elas rodam com security definer.
+-- O `(select auth.uid())` no lugar de `auth.uid()` faz o Postgres avaliar a
+-- função uma vez por consulta em vez de uma vez por linha.
+
+-- Perfis: cada um vê o seu. Créditos NÃO entram aqui — só as funções acima
+-- mexem no saldo, e elas rodam com security definer.
 drop policy if exists perfis_leitura on public.perfis;
 create policy perfis_leitura on public.perfis
-  for select using (auth.uid() = id);
+  for select using ((select auth.uid()) = id);
 
 -- Projetos: dono faz tudo.
 drop policy if exists projetos_leitura on public.projetos;
 create policy projetos_leitura on public.projetos
-  for select using (auth.uid() = usuario_id);
+  for select using ((select auth.uid()) = usuario_id);
 
 drop policy if exists projetos_insercao on public.projetos;
 create policy projetos_insercao on public.projetos
-  for insert with check (auth.uid() = usuario_id);
+  for insert with check ((select auth.uid()) = usuario_id);
 
 drop policy if exists projetos_alteracao on public.projetos;
 create policy projetos_alteracao on public.projetos
-  for update using (auth.uid() = usuario_id)
-           with check (auth.uid() = usuario_id);
+  for update using ((select auth.uid()) = usuario_id)
+           with check ((select auth.uid()) = usuario_id);
 
 drop policy if exists projetos_exclusao on public.projetos;
 create policy projetos_exclusao on public.projetos
-  for delete using (auth.uid() = usuario_id);
+  for delete using ((select auth.uid()) = usuario_id);
 
 -- Transações: leitura do próprio histórico. Escrita só pelas funções.
 drop policy if exists transacoes_leitura on public.transacoes;
 create policy transacoes_leitura on public.transacoes
-  for select using (auth.uid() = usuario_id);
+  for select using ((select auth.uid()) = usuario_id);
 
--- Config: ninguém lê pelo cliente. Sem policy = sem acesso via API.
+-- Config: sem policy nenhuma, de propósito. Sem policy = sem acesso.
 
 -- ------------------------------------------------------------ permissões ----
 
-grant usage on schema public to anon, authenticated;
-grant select on public.perfis to authenticated;
-grant select, insert, update, delete on public.projetos to authenticated;
-grant select on public.transacoes to authenticated;
-grant execute on function public.debitar(integer, text, uuid) to authenticated;
-grant execute on function public.estornar(integer, text) to authenticated;
+-- ATENÇÃO, e foi o que quase passou batido: o Supabase mantém um
+-- `alter default privileges` no schema public que concede ALL em toda tabela
+-- e função nova para anon e authenticated. Um `grant select` aqui não seria a
+-- permissão — seria um acréscimo a um ALL que já estava lá. Por isso zera
+-- primeiro e concede depois.
 
--- A tabela de config e o saldo bruto ficam fora do alcance do cliente.
-revoke all on public.config from anon, authenticated;
+revoke all on public.perfis     from anon, authenticated;
+revoke all on public.projetos   from anon, authenticated;
+revoke all on public.transacoes from anon, authenticated;
+revoke all on public.config     from anon, authenticated;
+
+revoke all on function public.ao_criar_usuario()                from public, anon, authenticated;
+revoke all on function public.tocar_atualizado_em()             from public, anon, authenticated;
+revoke all on function public.debitar(integer, text, uuid)      from public, anon, authenticated;
+revoke all on function public.estornar(uuid, integer, text)     from public, anon, authenticated;
+
+grant usage on schema public to anon, authenticated;
+
+grant select on public.perfis to authenticated;                       -- saldo: só olhar
+grant select, insert, update, delete on public.projetos to authenticated;
+grant select on public.transacoes to authenticated;                   -- histórico: só olhar
+
+grant execute on function public.debitar(integer, text, uuid) to authenticated;
+grant execute on function public.estornar(uuid, integer, text) to service_role;
+
+-- E o mesmo cuidado para o que vier depois.
+alter default privileges in schema public revoke all on tables    from anon, authenticated;
+alter default privileges in schema public revoke all on functions from anon, authenticated;

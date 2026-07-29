@@ -1,13 +1,12 @@
 # Banco de dados
 
-Dois arquivos, nesta ordem, no **SQL Editor** do projeto Supabase:
+Aplicado no projeto `oqmonbwiwqyxtphrglsg`. Os arquivos aqui são o registro do
+que está lá, e recriam o banco do zero nesta ordem:
 
 1. `01-esquema.sql` — tabelas, funções de crédito, RLS, permissões
 2. `02-storage.sql` — bucket das imagens e as políticas dele
 
-Cole o conteúdo inteiro de cada um, execute, e confira que a resposta é
-`Success`. Os dois são idempotentes: rodar de novo não duplica nada nem
-apaga dados.
+Os dois são idempotentes: rodar de novo não duplica nada nem apaga dados.
 
 ## O que cada tabela guarda
 
@@ -18,16 +17,39 @@ apaga dados.
 | `transacoes` | histórico de todo débito e estorno — auditoria e limite diário |
 | `config`     | os limites do disjuntor, editáveis sem publicar código |
 
-## As duas regras que sustentam o resto
+## As três regras que sustentam o resto
 
-**O saldo não é editável pelo cliente.** A permissão concedida em `perfis` é
-só `select`. Quem mexe em créditos são as funções `debitar()` e `estornar()`,
-que rodam em `security definer`. Mesmo com a chave anon em mãos e o DevTools
-aberto, não existe caminho para se dar crédito.
+**O saldo não é editável pelo cliente.** Em `perfis` o navegador tem `select` e
+nada mais. Quem mexe em crédito são as funções, que rodam em `security definer`.
+
+**Débito e estorno vivem em lados opostos.** `debitar()` usa `auth.uid()` e pode
+ficar exposta: o pior que alguém faz chamando direto é queimar o próprio saldo.
+`estornar()` credita, então recebe o usuário por parâmetro e só a `service_role`
+executa — o servidor chama, depois de validar a sessão. Se ela estivesse
+concedida a `authenticated`, qualquer pessoa logada chamaria
+`/rest/v1/rpc/estornar` com a quantia que quisesse.
 
 **Um débito é atômico.** `debitar()` trava a linha do perfil com
 `select ... for update` antes de conferir o saldo. Duas requisições
 simultâneas do mesmo usuário não gastam o mesmo crédito duas vezes.
+
+## A armadilha das permissões
+
+O Supabase mantém um `alter default privileges` no schema `public` que concede
+**ALL** em toda tabela e função nova para `anon` e `authenticated`. Um
+`grant select` não é a permissão — é um acréscimo a um ALL que já estava lá.
+Por isso o esquema faz `revoke all` antes de conceder, e desarma o default para
+o que vier depois.
+
+Se um dia você criar uma tabela pela interface do Supabase, confira as
+permissões dela:
+
+```sql
+select table_name, grantee, string_agg(privilege_type, ',') 
+  from information_schema.role_table_grants
+ where table_schema='public' and grantee in ('anon','authenticated')
+ group by table_name, grantee;
+```
 
 ## Limites
 
@@ -49,26 +71,26 @@ usuário específico sem apagar a conta dele:
 update public.perfis set bloqueado = true where email = 'quem@exemplo.com';
 ```
 
-## O que eu testei
+## O que foi testado no banco de verdade
 
-Rodei o `01-esquema.sql` num Postgres 16 local com `auth.users`, `auth.uid()`
-e os papéis `anon`/`authenticated` simulados. Passaram:
+Com dois usuários de teste, criados e apagados depois:
 
-- perfil criado automaticamente no cadastro, com 9 créditos
-- débito, estorno e histórico de transações
-- recusa de saldo insuficiente, quantia inválida (0, negativa) e sem sessão
-- RLS: um usuário não lê, não edita nem apaga dados do outro
-- tentativa de se dar crédito via `update` → `permission denied`
-- tentativa de inserir transação direto → `permission denied`
-- leitura de `config` pelo cliente → `permission denied`
-- limite diário por usuário e limite global barrando na hora certa
-- concorrência: saldo 3, dois pedidos de 3 ao mesmo tempo → um passa, o outro
-  é recusado. Sem a trava os dois passariam e o saldo iria a −3.
+- perfil criado automaticamente pelo gatilho, com 9 créditos
+- débito de 3 → saldo 6; estorno pelo servidor → volta a 9
+- cliente chamando `estornar` → `permission denied for function estornar`
+- cliente dando `update` no próprio saldo → `permission denied for table perfis`
+- cliente inserindo transação → `permission denied for table transacoes`
+- cliente lendo `config` → `permission denied for table config`
+- débito além do saldo → `saldo_insuficiente`; quantia negativa → `quantia_invalida`
+- Ana inserindo projeto no nome do Bruno → violação de RLS
+- Ana enxerga 1 projeto, 1 perfil e 1 transação: os dela
 
-**O `02-storage.sql` não foi testado aqui** — o esquema `storage` só existe
-dentro do Supabase. A lógica das políticas é a mesma dos outros arquivos
-(`(storage.foldername(name))[1] = auth.uid()::text`, ou seja, a primeira pasta
-do caminho é o dono), mas quem confirma é o primeiro upload real.
+Os limites diários e a corrida de concorrência foram testados antes, num
+Postgres local com o mesmo esquema: saldo 3, dois pedidos de 3 ao mesmo tempo,
+um passa e o outro é recusado.
+
+O advisor de segurança do Supabase está limpo, fora um INFO sobre `config` ter
+RLS sem policy — que é exatamente a intenção.
 
 ## Caminho dos arquivos no bucket
 
@@ -76,4 +98,5 @@ do caminho é o dono), mas quem confirma é o primeiro upload real.
 {usuario_id}/{projeto_id}/{indice}.png
 ```
 
-O bucket é privado: nada é servido sem URL assinada.
+O bucket é privado, limitado a 8 MB por arquivo, e só aceita PNG, JPEG, WebP e
+SVG. Nada é servido sem URL assinada.
