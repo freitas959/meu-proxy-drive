@@ -33,6 +33,12 @@ concedida a `authenticated`, qualquer pessoa logada chamaria
 `select ... for update` antes de conferir o saldo. Duas requisições
 simultâneas do mesmo usuário não gastam o mesmo crédito duas vezes.
 
+**O estorno devolve saldo E cota.** A conta do dia é líquida — débitos menos
+estornos — e por isso `transacoes.tipo` existe. Se ela somasse só os valores
+negativos, a geração que falhou continuaria ocupando o limite diário depois de
+o crédito voltar. E se somasse tudo, uma recarga registrada aqui viraria cota
+extra; por isso `ajuste` fica de fora da conta.
+
 ## A armadilha das permissões
 
 O Supabase mantém um `alter default privileges` no schema `public` que concede
@@ -104,6 +110,11 @@ Com dois usuários de teste, criados e apagados depois:
 - débito além do saldo → `saldo_insuficiente`; quantia negativa → `quantia_invalida`
 - Ana inserindo projeto no nome do Bruno → violação de RLS
 - Ana enxerga 1 projeto, 1 perfil e 1 transação: os dela
+- usuário comum criando template → violação de RLS; e se promovendo a admin →
+  `permission denied for table perfis`
+- estorno devolvendo a cota do dia: com o teto em 20, dois débitos de 10
+  esgotaram o dia e o terceiro foi recusado; depois de um estorno de 10, o
+  débito seguinte passou
 
 Os limites diários e a corrida de concorrência foram testados antes, num
 Postgres local com o mesmo esquema: saldo 3, dois pedidos de 3 ao mesmo tempo,

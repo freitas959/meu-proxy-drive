@@ -49,12 +49,22 @@ create table if not exists public.transacoes (
   usuario_id uuid        not null references auth.users (id) on delete cascade,
   quantia    integer     not null,               -- negativo debita, positivo credita
   motivo     text        not null,
+  -- Só 'debito' e 'estorno' contam na cota do dia. 'ajuste' existe pra
+  -- recarga e correção manual, que não podem virar cota extra.
+  tipo       text        not null default 'debito'
+             check (tipo in ('debito', 'estorno', 'ajuste')),
   projeto_id uuid        references public.projetos (id) on delete set null,
   criado_em  timestamptz not null default now()
 );
 
+alter table public.transacoes
+  add column if not exists tipo text not null default 'debito';
+
 create index if not exists transacoes_usuario_dia_idx
   on public.transacoes (usuario_id, criado_em desc);
+
+create index if not exists transacoes_dia_tipo_idx
+  on public.transacoes (criado_em desc, tipo);
 
 -- Disjuntor: dá pra apertar os limites sem publicar código novo.
 create table if not exists public.config (
@@ -138,11 +148,16 @@ begin
     raise exception 'perfil_indisponivel' using errcode = '28000';
   end if;
 
+  -- Consumo LÍQUIDO do dia: débitos menos estornos. Somar só o que é negativo
+  -- faria a geração que falhou continuar ocupando a cota mesmo depois de o
+  -- crédito voltar — o cliente azarado perderia o dia sem receber nada.
+  -- O `greatest` impede que um estorno órfão vire cota extra.
+  --
   -- O teto global vale para todo mundo, ilimitado inclusive: se algo entrar
   -- em laço, é a fatura da API que sangra, e este é o único freio.
-  select coalesce(-sum(quantia), 0) into v_gasto_global
+  select greatest(coalesce(-sum(quantia), 0), 0) into v_gasto_global
     from public.transacoes
-   where quantia < 0
+   where tipo in ('debito', 'estorno')
      and criado_em >= date_trunc('day', now());
 
   if v_gasto_global + p_quantia > v_limite_global then
@@ -152,8 +167,8 @@ begin
   if v_ilimitado then
     -- Registra o consumo mesmo sem debitar: sem isso não dá para saber
     -- quanto a conta ilimitada está custando de API.
-    insert into public.transacoes (usuario_id, quantia, motivo, projeto_id)
-    values (v_usuario, -p_quantia, p_motivo || ' (ilimitado)', p_projeto_id);
+    insert into public.transacoes (usuario_id, quantia, motivo, projeto_id, tipo)
+    values (v_usuario, -p_quantia, p_motivo || ' (ilimitado)', p_projeto_id, 'debito');
     return v_saldo;
   end if;
 
@@ -161,10 +176,10 @@ begin
     raise exception 'saldo_insuficiente' using errcode = '22023';
   end if;
 
-  select coalesce(-sum(quantia), 0) into v_gasto_hoje
+  select greatest(coalesce(-sum(quantia), 0), 0) into v_gasto_hoje
     from public.transacoes
    where usuario_id = v_usuario
-     and quantia < 0
+     and tipo in ('debito', 'estorno')
      and criado_em >= date_trunc('day', now());
 
   if v_gasto_hoje + p_quantia > v_limite_usuario then
@@ -176,8 +191,8 @@ begin
          atualizado_em = now()
    where id = v_usuario;
 
-  insert into public.transacoes (usuario_id, quantia, motivo, projeto_id)
-  values (v_usuario, -p_quantia, p_motivo, p_projeto_id);
+  insert into public.transacoes (usuario_id, quantia, motivo, projeto_id, tipo)
+  values (v_usuario, -p_quantia, p_motivo, p_projeto_id, 'debito');
 
   return v_saldo - p_quantia;
 end;
@@ -221,8 +236,14 @@ begin
     raise exception 'perfil_indisponivel' using errcode = '28000';
   end if;
 
-  insert into public.transacoes (usuario_id, quantia, motivo)
-  values (p_usuario, p_quantia, p_motivo || (case when v_ilimitado then ' (ilimitado)' else '' end));
+  -- O tipo 'estorno' é o que devolve a cota do dia em `debitar`.
+  insert into public.transacoes (usuario_id, quantia, motivo, tipo)
+  values (
+    p_usuario,
+    p_quantia,
+    p_motivo || (case when v_ilimitado then ' (ilimitado)' else '' end),
+    'estorno'
+  );
 
   -- Em conta ilimitada nada foi debitado; devolver aqui inflaria o saldo a
   -- cada falha da IA.
