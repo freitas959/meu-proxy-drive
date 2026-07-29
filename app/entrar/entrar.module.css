@@ -1,0 +1,99 @@
+.tela {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 40px 20px;
+}
+
+.caixa {
+  width: 100%;
+  max-width: 400px;
+  padding: 30px 26px;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  justify-content: center;
+}
+
+.marcaLeve {
+  color: var(--orange);
+}
+
+.titulo {
+  margin-top: 22px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.sub {
+  margin-top: 7px;
+  font-size: 14px;
+  color: var(--ink-60);
+  line-height: 1.5;
+}
+
+.form {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.rotulo {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.acao {
+  margin-top: 4px;
+  width: 100%;
+}
+
+.troca {
+  margin-top: 20px;
+  padding-top: 17px;
+  border-top: 1.5px dashed var(--ink-40);
+  font-size: 14px;
+  color: var(--ink-60);
+  text-align: center;
+}
+
+.trocaBtn {
+  color: var(--orange);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.aviso {
+  margin-top: 16px;
+  padding: 11px 13px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.avisoErro {
+  background: #fdeee7;
+  border-color: var(--orange);
+}
+
+.avisoOk {
+  background: #f0fae0;
+}
+
+.creditosNota {
+  margin-top: 18px;
+  font-size: 13px;
+  color: var(--ink-40);
+  text-align: center;
+  line-height: 1.5;
+}

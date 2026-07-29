@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { FONTES_TITULO, FONTES_CORPO } from "@/lib/templates";
 import { TAMANHOS } from "@/lib/render";
-import { CUSTOS } from "@/lib/store";
+import { CUSTOS } from "@/lib/custos";
 import s from "@/app/app/wizard.module.css";
 
 const ROTULO_TIPO = {

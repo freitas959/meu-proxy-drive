@@ -7,6 +7,8 @@ import {
   MODELO_IMAGEM,
 } from "@/lib/gemini";
 import { erroGemini, erroAnthropic } from "@/lib/erros";
+import { cobrar, devolver, exigirUsuario } from "@/lib/creditos";
+import { CUSTOS } from "@/lib/custos";
 
 export const maxDuration = 90;
 
@@ -63,25 +65,18 @@ function svgValido(svg) {
 
 /** Foto realista pelo Gemini. Devolve a imagem como data URL pro canvas usar. */
 async function capaEmFoto(cena, paleta, tamanho) {
-  if (!temChaveGemini()) {
-    return Response.json(
-      {
-        erro:
-          "GEMINI_API_KEY não configurada. Defina a variável de ambiente ou escolha a capa em ilustração.",
-      },
-      { status: 503 }
-    );
-  }
-
   const { midia, dados } = await gerarImagem({
     prompt: promptDeCapa({ cena, paleta }),
     aspecto: aspectoDe(tamanho),
   });
 
-  return Response.json({ imagem: `data:${midia};base64,${dados}`, estilo: "foto" });
+  return { imagem: `data:${midia};base64,${dados}`, estilo: "foto" };
 }
 
 export async function POST(req) {
+  const sessao = await exigirUsuario();
+  if (!sessao.ok) return sessao.resposta;
+
   let corpo;
   try {
     corpo = await req.json();
@@ -96,20 +91,38 @@ export async function POST(req) {
     return Response.json({ erro: "Descreva a cena da capa." }, { status: 400 });
   }
 
+  // Servidor sem a chave do estilo pedido é problema nosso, não do saldo dele:
+  // confere antes de cobrar.
+  if (estilo === "foto" && !temChaveGemini()) {
+    return Response.json(
+      {
+        erro:
+          "GEMINI_API_KEY não configurada. Defina a variável de ambiente ou escolha a capa em ilustração.",
+      },
+      { status: 503 }
+    );
+  }
+
+  const cli = estilo === "foto" ? null : getCliente();
+  if (estilo !== "foto" && !cli) return semChave();
+
+  // A capa é a ação mais cara; o estorno abaixo é o que a torna justa.
+  const cobranca = await cobrar(sessao, CUSTOS.capaIA, `capa:${estilo}`);
+  if (!cobranca.ok) return cobranca.resposta;
+
   if (estilo === "foto") {
     try {
-      return await capaEmFoto(descricao, paleta, tamanho);
+      const dados = await capaEmFoto(descricao, paleta, tamanho);
+      return Response.json({ ...dados, saldo: cobranca.saldo });
     } catch (erro) {
       console.error("[capa/foto]", erro);
+      await devolver(cobranca.usuarioId, CUSTOS.capaIA, "estorno: falha na capa em foto");
       const amigavel = erro?.status
         ? erroGemini(erro.status, erro.detalhe || "", MODELO_IMAGEM)
         : erro?.message || "Falha ao gerar a foto da capa.";
       return Response.json({ erro: amigavel }, { status: 502 });
     }
   }
-
-  const cli = getCliente();
-  if (!cli) return semChave();
 
   try {
     const pedido = `CENA: ${descricao}
@@ -133,6 +146,7 @@ Desenhe e entregue pela ferramenta.`;
     const dados = extrairFerramenta(resposta, "entregar_capa");
     const problema = svgValido(dados?.svg);
     if (problema) {
+      await devolver(cobranca.usuarioId, CUSTOS.capaIA, "estorno: SVG inválido");
       return Response.json({ erro: problema }, { status: 502 });
     }
 
@@ -141,9 +155,11 @@ Desenhe e entregue pela ferramenta.`;
     return Response.json({
       imagem: `data:image/svg+xml;base64,${base64}`,
       estilo: "ilustracao",
+      saldo: cobranca.saldo,
     });
   } catch (erro) {
     console.error("[capa]", erro);
+    await devolver(cobranca.usuarioId, CUSTOS.capaIA, "estorno: falha na capa");
     return Response.json({ erro: erroAnthropic(erro) }, { status: 502 });
   }
 }

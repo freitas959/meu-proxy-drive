@@ -7,7 +7,8 @@ import Passo2Tema from "@/components/Passo2Tema";
 import Passo3Roteiro from "@/components/Passo3Roteiro";
 import Passo4Imagens from "@/components/Passo4Imagens";
 import ModalProjetos from "@/components/ModalProjetos";
-import { CUSTOS, debitar, estornar, getCreditos, novoId, salvarProjeto } from "@/lib/store";
+import { novoId, salvarProjeto } from "@/lib/store";
+import { anunciarSaldo } from "@/lib/conta";
 import { salvarImagens } from "@/lib/imagens";
 import { getTemplate } from "@/lib/templates";
 import s from "./wizard.module.css";
@@ -30,7 +31,13 @@ async function postar(rota, corpo) {
     body: JSON.stringify(corpo),
   });
   const dados = await resposta.json().catch(() => ({}));
-  if (!resposta.ok) throw new Error(dados?.erro || `Falha na requisição (${resposta.status}).`);
+  if (!resposta.ok) {
+    const falha = new Error(dados?.erro || `Falha na requisição (${resposta.status}).`);
+    falha.status = resposta.status;
+    throw falha;
+  }
+  // O saldo volta em toda geração bem-sucedida; o cabeçalho escuta isso.
+  if (typeof dados?.saldo === "number") anunciarSaldo(dados.saldo);
   return dados;
 }
 
@@ -92,14 +99,19 @@ export default function AppCarrossel() {
     avancar(2);
   }
 
-  /** Passo 2 → 3: lê a matéria (se houver link) e pede o roteiro à IA. */
-  async function gerarRoteiro() {
-    const custo = CUSTOS.roteiro;
-    if (!debitar(custo)) {
-      setErro(`Créditos insuficientes: você tem ${getCreditos()} e essa geração custa ${custo}.`);
+  /** Manda para o login quando a sessão caiu no meio do caminho. */
+  function tratarFalha(falha, aplicar) {
+    if (falha.status === 401) {
+      window.location.href = "/entrar";
       return;
     }
+    aplicar(falha.message);
+  }
 
+  /** Passo 2 → 3: lê a matéria (se houver link) e pede o roteiro à IA. */
+  async function gerarRoteiro() {
+    // O débito acontece dentro da rota, no banco. O cliente não faz mais conta
+    // de crédito nenhuma — só reage ao que o servidor responde.
     setCarregando(true);
     setErro("");
     try {
@@ -125,8 +137,7 @@ export default function AppCarrossel() {
       aplicarRoteiro(resultado);
       avancar(3);
     } catch (falha) {
-      estornar(custo);
-      setErro(falha.message);
+      tratarFalha(falha, setErro);
     } finally {
       setCarregando(false);
     }
@@ -134,12 +145,6 @@ export default function AppCarrossel() {
 
   /** Caminho barato: o texto já é do usuário, a IA só distribui nos cards. */
   async function importarTexto() {
-    const custo = CUSTOS.importar;
-    if (!debitar(custo)) {
-      setErro(`Créditos insuficientes: você tem ${getCreditos()} e importar custa ${custo}.`);
-      return;
-    }
-
     setCarregando(true);
     setErro("");
     try {
@@ -151,8 +156,7 @@ export default function AppCarrossel() {
       aplicarRoteiro(resultado);
       avancar(3);
     } catch (falha) {
-      estornar(custo);
-      setErro(falha.message);
+      tratarFalha(falha, setErro);
     } finally {
       setCarregando(false);
     }
@@ -179,13 +183,6 @@ export default function AppCarrossel() {
   async function gerarImagens() {
     const usaCapaIA = capaIA && dados.capaModo === "ia";
 
-    if (usaCapaIA && !debitar(CUSTOS.capaIA)) {
-      setErro(
-        `Créditos insuficientes: você tem ${getCreditos()} e a capa da IA custa ${CUSTOS.capaIA}.`
-      );
-      return;
-    }
-
     setErroCapa("");
     avancar(4);
 
@@ -202,8 +199,7 @@ export default function AppCarrossel() {
       });
       atualizarDados({ imagens: { ...dados.imagens, 0: imagem } });
     } catch (falha) {
-      estornar(CUSTOS.capaIA);
-      setErroCapa(falha.message);
+      tratarFalha(falha, setErroCapa);
     } finally {
       setGerandoCapa(false);
     }

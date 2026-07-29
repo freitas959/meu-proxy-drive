@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getCreditos } from "@/lib/store";
+import { useRouter } from "next/navigation";
+import { buscarSaldo, getUsuarioAtual, ouvirSaldo, sair } from "@/lib/conta";
+import { temSupabase } from "@/lib/supabase/navegador";
 import s from "./chrome.module.css";
 
 function Marca() {
@@ -50,22 +52,36 @@ function IconeChapeu() {
 }
 
 /**
- * Cabeçalho global. O saldo de créditos se reinscreve no evento do store pra
- * refletir um débito feito em qualquer ponto do fluxo, sem prop drilling.
+ * Cabeçalho global. O saldo vem do banco; as rotas devolvem o valor novo a
+ * cada geração e anunciam pelo evento, então não há polling nem prop drilling.
  */
 export function Cabecalho({ paginaAtual, onProjetos }) {
+  const router = useRouter();
   const [creditos, setCreditos] = useState(null);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
-    const atualizar = () => setCreditos(getCreditos());
-    atualizar();
-    window.addEventListener("carrosseia:store", atualizar);
-    window.addEventListener("storage", atualizar);
+    let vivo = true;
+    (async () => {
+      const [saldo, usuario] = await Promise.all([buscarSaldo(), getUsuarioAtual()]);
+      if (!vivo) return;
+      setCreditos(saldo);
+      setEmail(usuario?.email || "");
+    })();
     return () => {
-      window.removeEventListener("carrosseia:store", atualizar);
-      window.removeEventListener("storage", atualizar);
+      vivo = false;
     };
   }, []);
+
+  useEffect(() => ouvirSaldo(setCreditos), []);
+
+  async function encerrar() {
+    await sair();
+    router.replace("/entrar");
+    router.refresh();
+  }
+
+  const inicial = (email[0] || "?").toUpperCase();
 
   return (
     <header className={s.header}>
@@ -111,7 +127,22 @@ export function Cabecalho({ paginaAtual, onProjetos }) {
             <IconeDiamante />
             {creditos === null ? "—" : creditos} créditos
           </Link>
-          <span className={s.avatar}>A ▾</span>
+          {email ? (
+            <button
+              type="button"
+              className={s.avatar}
+              onClick={encerrar}
+              title={`${email} — clique para sair`}
+            >
+              {inicial} ↩
+            </button>
+          ) : (
+            temSupabase() && (
+              <Link href="/entrar" className={s.navBtn}>
+                Entrar
+              </Link>
+            )
+          )}
         </nav>
 
         <span className={s.madeWith}>feito com Claude</span>

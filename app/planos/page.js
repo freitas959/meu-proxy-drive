@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Cabecalho, Rodape } from "@/components/Chrome";
-import { CUSTOS, getCreditos, setCreditos } from "@/lib/store";
+import { CUSTOS } from "@/lib/custos";
+import { buscarSaldo, ouvirSaldo } from "@/lib/conta";
 import p from "../paginas.module.css";
 
 const PLANOS = [
@@ -10,9 +11,9 @@ const PLANOS = [
     nome: "Teste",
     preco: "Grátis",
     periodo: "",
-    creditos: 30,
+    creditos: 9,
     destaque: false,
-    itens: ["30 créditos ao criar a conta", "Todos os templates", "Download em PNG e .zip"],
+    itens: ["9 créditos ao criar a conta", "Todos os templates", "Download em PNG e .zip"],
   },
   {
     nome: "Criador",
@@ -46,11 +47,14 @@ export default function Planos() {
   const [saldo, setSaldo] = useState(null);
 
   useEffect(() => {
-    const atualizar = () => setSaldo(getCreditos());
-    atualizar();
-    window.addEventListener("carrosseia:store", atualizar);
-    return () => window.removeEventListener("carrosseia:store", atualizar);
+    let vivo = true;
+    buscarSaldo().then((valor) => vivo && setSaldo(valor));
+    return () => {
+      vivo = false;
+    };
   }, []);
+
+  useEffect(() => ouvirSaldo(setSaldo), []);
 
   return (
     <>
@@ -118,18 +122,20 @@ export default function Planos() {
                 type="button"
                 className={`btn ${plano.destaque ? "btn-primary" : ""}`}
                 style={{ marginTop: "auto" }}
-                onClick={() => setCreditos(plano.creditos)}
+                disabled
+                title="Pagamento ainda não está ligado"
               >
-                Carregar {plano.creditos} créditos
+                Em breve
               </button>
             </article>
           ))}
         </div>
 
         <p className="hint" style={{ marginTop: 22 }}>
-          Ainda não há cobrança ligada: os botões acima apenas ajustam o saldo local pra você
-          testar o fluxo. Seu saldo agora é de{" "}
-          <strong>{saldo === null ? "—" : saldo} créditos</strong>.
+          A cobrança ainda não está ligada. Seu saldo agora é de{" "}
+          <strong>{saldo === null ? "—" : saldo} créditos</strong>, e ele vive no servidor: os
+          botões acima não mexem nele, e o navegador também não. Enquanto o pagamento não entra,
+          quem ajusta saldo é o administrador, direto no banco.
         </p>
       </main>
 

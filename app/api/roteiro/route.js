@@ -1,6 +1,8 @@
 import { getCliente, semChave, MODELO, extrairFerramenta } from "@/lib/anthropic";
 import { getTemplate } from "@/lib/templates";
 import { erroAnthropic } from "@/lib/erros";
+import { cobrar, devolver, exigirUsuario } from "@/lib/creditos";
+import { CUSTOS } from "@/lib/custos";
 
 export const maxDuration = 60;
 
@@ -84,26 +86,43 @@ REGRAS DE ESCRITA
 }
 
 export async function POST(req) {
+  // Sessão antes de tudo: sem ela, nem o estado da configuração do servidor
+  // precisa vazar.
+  const sessao = await exigirUsuario();
+  if (!sessao.ok) return sessao.resposta;
+
   const cli = getCliente();
   if (!cli) return semChave();
 
+  let body;
   try {
-    const body = await req.json();
-    const { tema = "", link = "", slides = 6, templateId, materia = "", anexos = [] } = body;
+    body = await req.json();
+  } catch {
+    return Response.json({ erro: "Requisição inválida." }, { status: 400 });
+  }
 
-    const template = getTemplate(templateId);
-    if (!template) {
-      return Response.json({ erro: "Template desconhecido." }, { status: 400 });
-    }
-    if (!tema.trim() && !materia.trim() && !link.trim()) {
-      return Response.json(
-        { erro: "Escreva o tema ou cole um link de matéria." },
-        { status: 400 }
-      );
-    }
+  const { tema = "", link = "", slides = 6, templateId, materia = "", anexos = [] } = body;
 
-    const total = Math.min(Math.max(Number(slides) || 6, 3), 10);
+  // Validar antes de cobrar: erro de preenchimento não pode custar crédito.
+  const template = getTemplate(templateId);
+  if (!template) {
+    return Response.json({ erro: "Template desconhecido." }, { status: 400 });
+  }
+  if (!tema.trim() && !materia.trim() && !link.trim()) {
+    return Response.json(
+      { erro: "Escreva o tema ou cole um link de matéria." },
+      { status: 400 }
+    );
+  }
 
+  const total = Math.min(Math.max(Number(slides) || 6, 3), 10);
+
+  // O preço sai daqui, não do corpo da requisição. O débito acontece dentro
+  // do banco, com a linha do perfil travada.
+  const cobranca = await cobrar(sessao, CUSTOS.roteiro, "roteiro");
+  if (!cobranca.ok) return cobranca.resposta;
+
+  try {
     const partes = [];
     if (tema.trim()) partes.push(`TEMA PEDIDO PELO USUÁRIO:\n${tema.trim()}`);
     if (materia.trim()) {
@@ -157,6 +176,7 @@ export async function POST(req) {
 
     const dados = extrairFerramenta(resposta, "entregar_roteiro");
     if (!dados?.slides?.length) {
+      await devolver(cobranca.usuarioId, CUSTOS.roteiro, "estorno: roteiro vazio");
       return Response.json({ erro: "A IA não devolveu um roteiro válido." }, { status: 502 });
     }
 
@@ -164,9 +184,11 @@ export async function POST(req) {
     dados.slides = dados.slides.slice(0, total);
     if (!dados.promptCapa) dados.promptCapa = template.cenaCapa || "";
 
-    return Response.json(dados);
+    // O saldo volta junto: o cabeçalho atualiza sem precisar de outra chamada.
+    return Response.json({ ...dados, saldo: cobranca.saldo });
   } catch (erro) {
     console.error("[roteiro]", erro);
+    await devolver(cobranca.usuarioId, CUSTOS.roteiro, "estorno: falha no roteiro");
     return Response.json({ erro: erroAnthropic(erro) }, { status: 502 });
   }
 }

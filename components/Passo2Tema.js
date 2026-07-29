@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import CardCanvas from "./CardCanvas";
-import { CUSTOS } from "@/lib/store";
+import { CUSTOS } from "@/lib/custos";
 import s from "@/app/app/wizard.module.css";
 
 const MIN_SLIDES = 3;
