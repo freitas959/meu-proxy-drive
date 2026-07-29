@@ -51,10 +51,13 @@ a mesma cena.
 São dois estilos, escolhidos no passo 2, e ambos chegam ao canvas como data URL
 pelo mesmo caminho das fotos que o usuário sobe:
 
-- **Foto realista** — Gemini Flash Image ("nano banana"). Usamos o Flash e não o
-  Pro porque o diferencial do Pro é desenhar texto dentro da imagem, e o texto
-  dos cards é desenhado pelo nosso canvas, com tipografia nítida e editável. O
-  prompt pede o terço inferior escuro e vazio, que é onde o título cai.
+- **Foto realista** — Gemini Flash Image ("nano banana"). O padrão é o
+  `gemini-2.5-flash-image` porque é o único da família com cota no nível
+  gratuito: os Flash mais novos e o Pro respondem `limit: 0` numa conta sem
+  faturamento. Vale o Flash e não o Pro também porque o diferencial do Pro é
+  desenhar texto dentro da imagem, e o texto dos cards é desenhado pelo nosso
+  canvas. Troque por `GEMINI_IMAGE_MODEL` quando houver billing ativo. O prompt
+  pede o terço inferior escuro e vazio, que é onde o título cai.
 - **Ilustração** — Claude devolve um SVG restrito a primitivas, validado no
   servidor (sem `<text>`, `<image>`, script ou referência externa) antes de ir
   pro cliente.

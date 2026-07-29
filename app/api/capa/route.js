@@ -1,5 +1,12 @@
 import { getCliente, semChave, MODELO, extrairFerramenta } from "@/lib/anthropic";
-import { gerarImagem, promptDeCapa, temChaveGemini, aspectoDe } from "@/lib/gemini";
+import {
+  gerarImagem,
+  promptDeCapa,
+  temChaveGemini,
+  aspectoDe,
+  MODELO_IMAGEM,
+} from "@/lib/gemini";
+import { erroGemini, erroAnthropic } from "@/lib/erros";
 
 export const maxDuration = 90;
 
@@ -94,10 +101,10 @@ export async function POST(req) {
       return await capaEmFoto(descricao, paleta, tamanho);
     } catch (erro) {
       console.error("[capa/foto]", erro);
-      return Response.json(
-        { erro: erro?.message || "Falha ao gerar a foto da capa." },
-        { status: 502 }
-      );
+      const amigavel = erro?.status
+        ? erroGemini(erro.status, erro.detalhe || "", MODELO_IMAGEM)
+        : erro?.message || "Falha ao gerar a foto da capa.";
+      return Response.json({ erro: amigavel }, { status: 502 });
     }
   }
 
@@ -137,6 +144,6 @@ Desenhe e entregue pela ferramenta.`;
     });
   } catch (erro) {
     console.error("[capa]", erro);
-    return Response.json({ erro: erro?.message || "Falha ao gerar a capa." }, { status: 500 });
+    return Response.json({ erro: erroAnthropic(erro) }, { status: 502 });
   }
 }

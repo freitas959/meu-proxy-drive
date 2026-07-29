@@ -1,5 +1,6 @@
 import { getCliente, semChave, extrairFerramenta } from "@/lib/anthropic";
 import { getTemplate } from "@/lib/templates";
+import { erroAnthropic } from "@/lib/erros";
 
 export const maxDuration = 45;
 
@@ -82,6 +83,6 @@ O texto é do usuário: preserve as palavras e as ideias dele. Você pode cortar
     return Response.json(dados);
   } catch (erro) {
     console.error("[importar]", erro);
-    return Response.json({ erro: erro?.message || "Falha ao importar." }, { status: 500 });
+    return Response.json({ erro: erroAnthropic(erro) }, { status: 502 });
   }
 }

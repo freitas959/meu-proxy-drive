@@ -1,5 +1,6 @@
 import { getCliente, semChave, MODELO, extrairFerramenta } from "@/lib/anthropic";
 import { getTemplate } from "@/lib/templates";
+import { erroAnthropic } from "@/lib/erros";
 
 export const maxDuration = 60;
 
@@ -166,9 +167,6 @@ export async function POST(req) {
     return Response.json(dados);
   } catch (erro) {
     console.error("[roteiro]", erro);
-    return Response.json(
-      { erro: erro?.message || "Falha ao gerar o roteiro." },
-      { status: 500 }
-    );
+    return Response.json({ erro: erroAnthropic(erro) }, { status: 502 });
   }
 }
