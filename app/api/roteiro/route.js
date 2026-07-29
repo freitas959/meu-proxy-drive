@@ -67,8 +67,24 @@ const FERRAMENTA = {
   },
 };
 
+// O template de chat mostra o corpo do card dentro de uma caixa de conversa.
+// Ali o texto não é prosa sobre o assunto: é a instrução que o leitor vai
+// copiar. Sem esta regra a IA escreve um parágrafo bonito sobre prompts e o
+// card fica lindo e inútil.
+const REGRAS_PROMPT = `
+ESTE TEMPLATE MOSTRA CADA CARD COMO UMA CAIXA DE CONVERSA DE IA
+- O campo "texto" de cada card do meio NÃO é explicação: é um prompt pronto, escrito na segunda pessoa, para o leitor copiar e colar em qualquer assistente.
+- Escreva o prompt como se você fosse o leitor falando com a IA. Comece com o contexto ("Eu ensino...", "Eu explico...", "Assuma que...").
+- Use marcadores em CAIXA ALTA entre colchetes para o que o leitor precisa trocar: [SEU TEMA], [SEU PÚBLICO], [SEU PRODUTO]. No máximo dois por prompt.
+- Cada prompt deve pedir uma quantidade concreta e um formato concreto ("me dê 5 frases de no máximo 12 palavras").
+- Termine com uma restrição que evite resposta genérica ("nada de promessa vazia", "nada de analogia batida tipo iceberg").
+- De 40 a 70 palavras por prompt. Marque de 1 a 2 termos com **asteriscos duplos**.
+- O "titulo" continua sendo a promessa daquele prompt, não o prompt em si.
+- O selo dos cards do meio é sempre "PROMPT".`;
+
 function sistema(template, slides) {
   return `Você escreve carrosséis de Instagram em português do Brasil que prendem a atenção até o último card.
+${template.layout === "chat" ? REGRAS_PROMPT : ""}
 
 TEMPLATE ESCOLHIDO: "${template.nome}" — ${template.descricao}
 SELOS QUE COMBINAM COM ESSE TEMPLATE: ${template.selos.join(", ")}
