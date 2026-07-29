@@ -17,6 +17,7 @@ export default function CardCanvas({
   total = 1,
   imagem = null,
   handle = "",
+  perfil = null,
   ehCapa = false,
   escala = 1,
   className = "",
@@ -35,6 +36,7 @@ export default function CardCanvas({
     total,
     imagem,
     handle,
+    perfil,
     ehCapa,
     escala,
   });
@@ -54,6 +56,7 @@ export default function CardCanvas({
         total,
         imagem,
         handle,
+        perfil,
         ehCapa,
         escala,
       });

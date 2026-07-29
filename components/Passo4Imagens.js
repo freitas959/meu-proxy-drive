@@ -16,6 +16,7 @@ export default function Passo4Imagens({
   fontes,
   tamanho,
   handle,
+  perfil,
   roteiro,
   imagens,
   gerandoCapa,
@@ -44,6 +45,7 @@ export default function Passo4Imagens({
       total,
       imagem: imagens[indice] || null,
       handle,
+      perfil,
       ehCapa: indice === 0,
     });
   }
@@ -164,6 +166,7 @@ export default function Passo4Imagens({
           fontes={fontes}
           tamanho={tamanho}
           handle={handle}
+          perfilPost={perfil}
           imagens={imagens}
           legenda={legenda}
           onFechar={() => setFeedAberto(false)}
@@ -203,6 +206,7 @@ export default function Passo4Imagens({
                   total={total}
                   imagem={imagens[i] || null}
                   handle={handle}
+                  perfil={perfil}
                   ehCapa={i === 0}
                   escala={0.3}
                 />

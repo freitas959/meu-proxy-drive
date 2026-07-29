@@ -85,6 +85,7 @@ export default function PreviaFeed({
   fontes,
   tamanho,
   handle,
+  perfilPost,
   imagens,
   legenda,
   onFechar,
@@ -92,9 +93,11 @@ export default function PreviaFeed({
   const [indice, setIndice] = useState(0);
   const total = roteiro.length;
 
-  const perfil = (handle || "seuperfil").replace(/^@\s*/, "") || "seuperfil";
-  const inicial = perfil.charAt(0).toUpperCase();
-  const curtidas = curtidasFicticias(roteiro[0]?.titulo || perfil);
+  const arroba = (handle || "seuperfil").replace(/^@\s*/, "") || "seuperfil";
+  // O nome e a foto que o usuário definiu no passo 3 valem aqui também: a
+  // simulação do feed é a mesma conta que aparece dentro do card.
+  const inicial = (perfilPost?.nome || arroba).charAt(0).toUpperCase();
+  const curtidas = curtidasFicticias(roteiro[0]?.titulo || arroba);
   const textoLegenda = legenda?.trim() || roteiro[0]?.titulo || "";
 
   const anterior = useCallback(() => setIndice((i) => Math.max(0, i - 1)), []);
@@ -145,9 +148,14 @@ export default function PreviaFeed({
 
         <header className={s.cabecalho}>
           <span className={s.avatar} aria-hidden="true">
-            {inicial}
+            {perfilPost?.foto ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={perfilPost.foto} alt="" className={s.avatarFoto} />
+            ) : (
+              inicial
+            )}
           </span>
-          <span className={s.perfil}>{perfil}</span>
+          <span className={s.perfil}>{arroba}</span>
           <SeloVerificado />
           <span className={s.menu} aria-hidden="true">
             ⋯
@@ -170,6 +178,7 @@ export default function PreviaFeed({
             total={total}
             imagem={imagens[indice] || null}
             handle={handle}
+            perfil={perfilPost}
             ehCapa={indice === 0}
             escala={0.42}
           />
@@ -227,7 +236,7 @@ export default function PreviaFeed({
           <p className={s.curtidas}>{curtidas.toLocaleString("pt-BR")} curtidas</p>
           {textoLegenda && (
             <p className={s.legenda}>
-              <span className={s.perfilLegenda}>{perfil}</span> {textoLegenda}
+              <span className={s.perfilLegenda}>{arroba}</span> {textoLegenda}
             </p>
           )}
           <p className={s.aviso}>Prévia ilustrativa — curtidas e comentários são fictícios.</p>

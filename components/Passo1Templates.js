@@ -93,6 +93,7 @@ function ModalTemplate({ template, onFechar, onUsar }) {
             fontes={template.fontes}
             indice={indice}
             total={slides.length}
+            imagem={indice === 0 ? template.capaUrl || null : null}
             ehCapa={indice === 0}
             escala={0.32}
           />
@@ -124,6 +125,7 @@ function ModalTemplate({ template, onFechar, onUsar }) {
                 fontes={template.fontes}
                 indice={i}
                 total={slides.length}
+                imagem={i === 0 ? template.capaUrl || null : null}
                 ehCapa={i === 0}
                 escala={0.07}
               />
@@ -242,6 +244,7 @@ export default function Passo1Templates({ onEscolher }) {
                 fontes={template.fontes}
                 indice={0}
                 total={template.layout === "tweet" ? 8 : 6}
+                imagem={template.capaUrl || null}
                 ehCapa
                 escala={0.24}
               />

@@ -7,6 +7,7 @@ import CardCanvas from "@/components/CardCanvas";
 import { FONTES_CORPO, FONTES_TITULO, TEMPLATES } from "@/lib/templates";
 import { daLinha, paraLinha } from "@/lib/templatesBanco";
 import { invalidarCatalogo } from "@/lib/catalogo";
+import { enviarCapa } from "@/lib/capaTemplate";
 import { getSupabase } from "@/lib/supabase/navegador";
 import s from "./estudio.module.css";
 
@@ -33,6 +34,7 @@ const VAZIO = {
   selos: ["DADO", "MECANISMO", "ERRO COMUM", "AGORA"],
   exemplo: { titulo: "", texto: "" },
   cenaCapa: "",
+  capaUrl: "",
   descricao: "",
   capaIA: true,
   numerarTitulo: false,
@@ -117,6 +119,7 @@ export default function Estudio() {
   const [erro, setErro] = useState("");
   const [aviso, setAviso] = useState("");
   const [salvando, setSalvando] = useState(false);
+  const [capaOcupada, setCapaOcupada] = useState("");
 
   const mudar = useCallback((patch) => setT((atual) => ({ ...atual, ...patch })), []);
   const mudarPaleta = useCallback(
@@ -221,6 +224,57 @@ export default function Estudio() {
       setErro(falha.message || "Não consegui arquivar.");
     } finally {
       setSalvando(false);
+    }
+  }
+
+  async function subirCapa(arquivo) {
+    if (!arquivo) return;
+    setErro("");
+    setAviso("");
+    setCapaOcupada("upload");
+    try {
+      const url = await enviarCapa(t.id || apelido(t.nome) || "rascunho", arquivo);
+      mudar({ capaUrl: url });
+      setAviso("Capa enviada. Salve o template para gravar a mudança.");
+    } catch (falha) {
+      setErro(falha.message || "Não consegui subir a imagem.");
+    } finally {
+      setCapaOcupada("");
+    }
+  }
+
+  /** Gera pelo mesmo caminho da capa dos carrosséis e guarda no bucket. */
+  async function gerarCapa() {
+    const cena = t.cenaCapa.trim();
+    if (!cena) {
+      setErro("Descreva a cena da capa antes de gerar.");
+      return;
+    }
+
+    setErro("");
+    setAviso("");
+    setCapaOcupada("ia");
+    try {
+      const resposta = await fetch("/api/capa", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cena,
+          paleta: t.paleta,
+          estilo: "foto",
+          tamanho: "retrato",
+        }),
+      });
+      const dados = await resposta.json().catch(() => ({}));
+      if (!resposta.ok) throw new Error(dados?.erro || "Falha ao gerar a imagem.");
+
+      const url = await enviarCapa(t.id || apelido(t.nome) || "rascunho", dados.imagem);
+      mudar({ capaUrl: url });
+      setAviso("Capa gerada. Salve o template para gravar a mudança.");
+    } catch (falha) {
+      setErro(falha.message || "Não consegui gerar a imagem.");
+    } finally {
+      setCapaOcupada("");
     }
   }
 
@@ -431,6 +485,52 @@ export default function Estudio() {
                   placeholder="Ex.: mesa escura com um objeto iluminado, luz fria, minimalista"
                 />
               </Campo>
+            </div>
+
+            <div className={s.grupo}>
+              <span className={s.tituloGrupo}>Imagem da capa</span>
+              <p className="hint">
+                É a foto que aparece atrás do primeiro card na vitrine de templates. Sem ela, a
+                capa usa o fundo abstrato gerado a partir da paleta.
+              </p>
+
+              {t.capaUrl && (
+                <div className={s.capaAtual}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={t.capaUrl} alt="Capa atual do template" />
+                  <button
+                    type="button"
+                    className="btn btn-sm"
+                    onClick={() => mudar({ capaUrl: "" })}
+                  >
+                    Remover
+                  </button>
+                </div>
+              )}
+
+              <div className={s.acoes} style={{ marginTop: 0 }}>
+                <label className={`btn btn-sm ${capaOcupada ? s.desabilitado : ""}`}>
+                  {capaOcupada === "upload" ? "Enviando…" : "Subir imagem"}
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    hidden
+                    disabled={Boolean(capaOcupada)}
+                    onChange={(e) => {
+                      subirCapa(e.target.files?.[0]);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-dashed"
+                  onClick={gerarCapa}
+                  disabled={Boolean(capaOcupada)}
+                >
+                  {capaOcupada === "ia" ? "Gerando…" : "Gerar com IA"}
+                </button>
+              </div>
               <Campo rotulo="Título de exemplo">
                 <input
                   className="field"
@@ -489,6 +589,7 @@ export default function Estudio() {
                     indice={i}
                     total={cards.length}
                     handle="seu perfil"
+                    imagem={i === 0 ? t.capaUrl || null : null}
                     ehCapa={i === 0}
                     escala={0.3}
                   />
@@ -496,7 +597,9 @@ export default function Estudio() {
               ))}
             </div>
             <p className="hint" style={{ marginTop: 10 }}>
-              A capa aparece sem foto aqui — na geração real ela recebe a imagem.
+              {t.capaUrl
+                ? "A capa está usando a imagem que você definiu."
+                : "Sem imagem de capa, o primeiro card usa o fundo abstrato da paleta."}
             </p>
           </div>
         </div>

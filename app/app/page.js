@@ -55,6 +55,8 @@ export default function AppCarrossel() {
 
   const [tamanho, setTamanho] = useState(null);
   const [handle, setHandle] = useState("");
+  // Nome e foto que aparecem dentro do card no template de post.
+  const [perfil, setPerfil] = useState({ nome: "", foto: "" });
   const [capaIA, setCapaIA] = useState(true);
 
   const [gerandoCapa, setGerandoCapa] = useState(false);
@@ -216,6 +218,7 @@ export default function AppCarrossel() {
     setFontes(projeto.fontes || tpl.fontes);
     setTamanho(projeto.tamanho || "retrato");
     setHandle(projeto.handle || "");
+    setPerfil(projeto.perfil || { nome: "", foto: "" });
     setRoteiro(projeto.roteiro);
     setLegenda(projeto.legenda || "");
     setCapaIA(false);
@@ -242,6 +245,7 @@ export default function AppCarrossel() {
     setRoteiro([]);
     setLegenda("");
     setTamanho(null);
+    setPerfil({ nome: "", foto: "" });
     setCapaIA(true);
     setErroCapa("");
     setErro("");
@@ -262,6 +266,7 @@ export default function AppCarrossel() {
       fontes,
       tamanho,
       handle,
+      perfil,
       roteiro,
       legenda,
       capaEstilo: dados.capaEstilo,
@@ -269,7 +274,7 @@ export default function AppCarrossel() {
     // As imagens vão pro IndexedDB: em data URL elas estouram a cota do
     // localStorage, e sem elas o "Abrir" perderia a capa já gerada.
     salvarImagens(projetoId.current, dados.imagens);
-  }, [passo, template, roteiro, paleta, fontes, tamanho, handle, legenda, dados.tema, dados.imagens, dados.capaEstilo]);
+  }, [passo, template, roteiro, paleta, fontes, tamanho, handle, perfil, legenda, dados.tema, dados.imagens, dados.capaEstilo]);
 
   return (
     <>
@@ -306,6 +311,8 @@ export default function AppCarrossel() {
             setTamanho={setTamanho}
             handle={handle}
             setHandle={setHandle}
+            perfil={perfil}
+            setPerfil={setPerfil}
             roteiro={roteiro}
             setRoteiro={setRoteiro}
             capaIA={capaIA}
@@ -325,6 +332,7 @@ export default function AppCarrossel() {
             fontes={fontes}
             tamanho={tamanho || "retrato"}
             handle={handle}
+            perfil={perfil}
             roteiro={roteiro}
             imagens={dados.imagens}
             gerandoCapa={gerandoCapa}

@@ -187,3 +187,25 @@
   font-size: 14px;
   color: var(--ink-60);
 }
+
+.capaAtual {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.capaAtual img {
+  width: 84px;
+  height: 105px;
+  object-fit: cover;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  display: block;
+}
+
+/* O "subir imagem" é um <label> em volta de um input escondido, então ele não
+   herda o :disabled do botão — a classe faz esse papel. */
+.desabilitado {
+  opacity: 0.4;
+  pointer-events: none;
+}

@@ -29,6 +29,8 @@ export default function Passo3Roteiro({
   setTamanho,
   handle,
   setHandle,
+  perfil,
+  setPerfil,
   roteiro,
   setRoteiro,
   capaIA,
@@ -40,9 +42,68 @@ export default function Passo3Roteiro({
   carregando,
 }) {
   const [fonteCustom, setFonteCustom] = useState(null);
+  const [erroFoto, setErroFoto] = useState("");
   const inputFonte = useRef(null);
 
   const custo = capaIA ? CUSTOS.capaIA : 0;
+
+  /**
+   * A foto vira data URL e fica no projeto — o card é desenhado no canvas do
+   * navegador, então precisa dos bytes em mãos, não de uma URL remota.
+   *
+   * Antes de guardar, encolhe para 220px em quadrado. O avatar sai com 68px no
+   * card, e uma foto de celular inteira em base64 estouraria a cota do
+   * localStorage sozinha.
+   */
+  function receberFoto(arquivo) {
+    if (!arquivo) return;
+    setErroFoto("");
+
+    if (!arquivo.type.startsWith("image/")) {
+      setErroFoto("Escolha um arquivo de imagem.");
+      return;
+    }
+    if (arquivo.size > 8 * 1024 * 1024) {
+      setErroFoto("A foto passa de 8 MB. Use uma menor.");
+      return;
+    }
+
+    const url = URL.createObjectURL(arquivo);
+    const img = new Image();
+
+    img.onload = () => {
+      const LADO = 220;
+      const canvas = document.createElement("canvas");
+      canvas.width = LADO;
+      canvas.height = LADO;
+      const ctx = canvas.getContext("2d");
+
+      // Recorte central: o avatar é redondo, então as bordas somem de qualquer
+      // jeito e cortar pelo meio é o que preserva o rosto.
+      const lado = Math.min(img.width, img.height);
+      ctx.drawImage(
+        img,
+        (img.width - lado) / 2,
+        (img.height - lado) / 2,
+        lado,
+        lado,
+        0,
+        0,
+        LADO,
+        LADO
+      );
+
+      URL.revokeObjectURL(url);
+      setPerfil({ ...perfil, foto: canvas.toDataURL("image/jpeg", 0.86) });
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      setErroFoto("Não consegui ler essa imagem.");
+    };
+
+    img.src = url;
+  }
 
   function alterarSlide(indice, campo, valor) {
     setRoteiro(
@@ -134,6 +195,65 @@ export default function Passo3Roteiro({
             placeholder="@ seuperfil"
           />
         </div>
+
+        {/* Só o layout de post mostra nome e foto de perfil no card. Nos
+            outros esses campos não teriam onde aparecer. */}
+        {template.layout === "tweet" && (
+          <>
+            <hr className="divider-dashed" />
+            <div className={s.perfilLinha}>
+              <div className={s.perfilCampo}>
+                <label className="mono-label" htmlFor="perfil-nome">
+                  Nome no post{" "}
+                  <span className={s.rotuloLeve}>(o que aparece em negrito)</span>
+                </label>
+                <input
+                  id="perfil-nome"
+                  className="field"
+                  value={perfil?.nome || ""}
+                  onChange={(e) => setPerfil({ ...perfil, nome: e.target.value })}
+                  placeholder="Seu Nome"
+                />
+              </div>
+
+              <div className={s.perfilFoto}>
+                <span className="mono-label">Foto do perfil</span>
+                <div className={s.perfilFotoLinha}>
+                  <span className={s.perfilAvatar}>
+                    {perfil?.foto ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={perfil.foto} alt="Foto do perfil" />
+                    ) : (
+                      (perfil?.nome || handle || "S").replace(/^@/, "").charAt(0).toUpperCase()
+                    )}
+                  </span>
+                  <label className="btn btn-sm">
+                    {perfil?.foto ? "Trocar" : "Subir foto"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={(e) => {
+                        receberFoto(e.target.files?.[0]);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                  {perfil?.foto && (
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      onClick={() => setPerfil({ ...perfil, foto: "" })}
+                    >
+                      Remover
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+            {erroFoto && <p className={s.erroFoto}>{erroFoto}</p>}
+          </>
+        )}
       </div>
 
       <div className={`panel ${s.bloco}`}>
