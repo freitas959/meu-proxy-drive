@@ -1,0 +1,232 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  background: rgba(20, 16, 12, 0.62);
+  display: grid;
+  place-items: start center;
+  padding: 40px 20px;
+  overflow-y: auto;
+}
+
+.painel {
+  position: relative;
+  width: min(1000px, 100%);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 26px;
+}
+
+.fechar {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+  line-height: 1;
+}
+
+.fechar:hover {
+  background: #f2ede4;
+}
+
+.titulo {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.subtitulo {
+  font-size: 14px;
+  color: var(--ink-60);
+  margin-bottom: 22px;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 18px;
+}
+
+.cartao {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.previa {
+  background: #111;
+  line-height: 0;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+}
+
+.previaVazia {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: #6b6660;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+.info {
+  border-top: 2px solid var(--ink);
+  padding: 11px 12px 9px;
+  background: #f6f2ea;
+}
+
+.nome {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  margin-top: 3px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--ink-40);
+}
+
+.acoes {
+  display: flex;
+  border-top: 2px solid var(--ink);
+}
+
+.abrir {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--paper);
+}
+
+.abrir:hover {
+  background: #f2ede4;
+}
+
+.icone {
+  width: 44px;
+  display: grid;
+  place-items: center;
+  border-left: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.icone:hover {
+  background: #f2ede4;
+}
+
+.iconeApagar:hover {
+  background: #fde8e5;
+  color: #a81f12;
+}
+
+/* renomear no lugar */
+.campoNome {
+  width: 100%;
+  border: 2px solid var(--orange);
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--paper);
+}
+
+.campoNome:focus {
+  outline: none;
+}
+
+.dicaRenomear {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  color: var(--ink-40);
+}
+
+/* confirmação de exclusão */
+.confirmar {
+  padding: 11px 12px;
+  background: #fde8e5;
+  border-top: 2px solid var(--ink);
+}
+
+.confirmarTexto {
+  font-size: 13px;
+  color: #8f1a0f;
+  margin-bottom: 9px;
+  line-height: 1.4;
+}
+
+.confirmarBotoes {
+  display: flex;
+  gap: 8px;
+}
+
+.confirmarSim,
+.confirmarNao {
+  flex: 1;
+  border: 2px solid var(--ink);
+  border-radius: 7px;
+  padding: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.confirmarSim {
+  background: #c02718;
+  color: #fff;
+}
+
+.confirmarNao {
+  background: var(--paper);
+}
+
+/* vazio e carregando */
+.vazio {
+  padding: 46px 20px;
+  text-align: center;
+  color: var(--ink-60);
+  border: 2px dashed #cdc6b8;
+  border-radius: var(--radius);
+}
+
+.vazioTitulo {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+@media (max-width: 520px) {
+  .overlay {
+    padding: 20px 12px;
+  }
+
+  .painel {
+    padding: 18px;
+  }
+
+  .grade {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+}

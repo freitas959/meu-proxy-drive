@@ -53,7 +53,7 @@ function IconeChapeu() {
  * Cabeçalho global. O saldo de créditos se reinscreve no evento do store pra
  * refletir um débito feito em qualquer ponto do fluxo, sem prop drilling.
  */
-export function Cabecalho({ paginaAtual }) {
+export function Cabecalho({ paginaAtual, onProjetos }) {
   const [creditos, setCreditos] = useState(null);
 
   useEffect(() => {
@@ -87,13 +87,15 @@ export function Cabecalho({ paginaAtual }) {
             <IconeChapeu />
             Aprendizado
           </Link>
-          <Link
-            href="/projetos"
-            className={s.navBtn}
-            aria-current={paginaAtual === "projetos" ? "page" : undefined}
-          >
-            Meus projetos
-          </Link>
+          {onProjetos ? (
+            <button type="button" className={s.navBtn} onClick={onProjetos}>
+              Meus projetos
+            </button>
+          ) : (
+            <Link href="/app?projetos=1" className={s.navBtn}>
+              Meus projetos
+            </Link>
+          )}
           <Link
             href="/planos"
             className={s.navBtn}

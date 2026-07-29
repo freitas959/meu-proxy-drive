@@ -6,7 +6,10 @@ import Passo1Templates from "@/components/Passo1Templates";
 import Passo2Tema from "@/components/Passo2Tema";
 import Passo3Roteiro from "@/components/Passo3Roteiro";
 import Passo4Imagens from "@/components/Passo4Imagens";
+import ModalProjetos from "@/components/ModalProjetos";
 import { CUSTOS, debitar, estornar, getCreditos, novoId, salvarProjeto } from "@/lib/store";
+import { salvarImagens } from "@/lib/imagens";
+import { getTemplate } from "@/lib/templates";
 import s from "./wizard.module.css";
 
 const DADOS_INICIAIS = {
@@ -52,7 +55,18 @@ export default function AppCarrossel() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
 
+  const [projetosAberto, setProjetosAberto] = useState(false);
   const projetoId = useRef(novoId());
+
+  useEffect(() => {
+    // Outras páginas linkam pra /app?projetos=1; abrimos o modal e limpamos a
+    // URL pra um F5 não reabrir sozinho.
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("projetos") === "1") {
+      setProjetosAberto(true);
+      window.history.replaceState({}, "", "/app");
+    }
+  }, []);
 
   const avancar = useCallback((destino) => {
     setPasso(destino);
@@ -195,6 +209,34 @@ export default function AppCarrossel() {
     }
   }
 
+  /** Restaura um projeto salvo direto no passo 4, pronto pra baixar de novo. */
+  function abrirProjeto(projeto) {
+    const tpl = getTemplate(projeto.templateId);
+    if (!tpl || !projeto.roteiro?.length) return;
+
+    projetoId.current = projeto.id;
+    setTemplate(tpl);
+    setPaleta(projeto.paleta || tpl.paleta);
+    setFontes(projeto.fontes || tpl.fontes);
+    setTamanho(projeto.tamanho || "retrato");
+    setHandle(projeto.handle || "");
+    setRoteiro(projeto.roteiro);
+    setLegenda(projeto.legenda || "");
+    setCapaIA(false);
+    setErroCapa("");
+    setErro("");
+    setDados((atual) => ({
+      ...atual,
+      slides: projeto.roteiro.length,
+      imagens: projeto.imagens || {},
+      capaEstilo: projeto.capaEstilo || "foto",
+    }));
+    setProjetosAberto(false);
+    setMaxAlcancado(4);
+    setPasso(4);
+    window.scrollTo({ top: 0 });
+  }
+
   function novoCarrossel() {
     projetoId.current = novoId();
     setTemplate(null);
@@ -226,12 +268,16 @@ export default function AppCarrossel() {
       handle,
       roteiro,
       legenda,
+      capaEstilo: dados.capaEstilo,
     });
-  }, [passo, template, roteiro, paleta, fontes, tamanho, handle, legenda, dados.tema]);
+    // As imagens vão pro IndexedDB: em data URL elas estouram a cota do
+    // localStorage, e sem elas o "Abrir" perderia a capa já gerada.
+    salvarImagens(projetoId.current, dados.imagens);
+  }, [passo, template, roteiro, paleta, fontes, tamanho, handle, legenda, dados.tema, dados.imagens, dados.capaEstilo]);
 
   return (
     <>
-      <Cabecalho paginaAtual="app" />
+      <Cabecalho paginaAtual="app" onProjetos={() => setProjetosAberto(true)} />
       <Trilha atual={passo} maxAlcancado={maxAlcancado} onIr={setPasso} />
 
       <main className={`wrap ${s.main}`}>
@@ -294,6 +340,13 @@ export default function AppCarrossel() {
           />
         )}
       </main>
+
+      {projetosAberto && (
+        <ModalProjetos
+          onFechar={() => setProjetosAberto(false)}
+          onAbrir={abrirProjeto}
+        />
+      )}
 
       <Rodape />
     </>
