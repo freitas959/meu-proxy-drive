@@ -1,5 +1,5 @@
 import { getCliente, semChave, MODELO, extrairFerramenta } from "@/lib/anthropic";
-import { getTemplate } from "@/lib/templates";
+import { acharTemplateServidor } from "@/lib/catalogoServidor";
 import { erroAnthropic } from "@/lib/erros";
 import { cobrar, devolver, exigirUsuario } from "@/lib/creditos";
 import { CUSTOS } from "@/lib/custos";
@@ -120,7 +120,7 @@ export async function POST(req) {
   const { tema = "", link = "", slides = 6, templateId, materia = "", anexos = [] } = body;
 
   // Validar antes de cobrar: erro de preenchimento não pode custar crédito.
-  const template = getTemplate(templateId);
+  const template = await acharTemplateServidor(sessao.supabase, templateId);
   if (!template) {
     return Response.json({ erro: "Template desconhecido." }, { status: 400 });
   }

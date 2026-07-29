@@ -1,0 +1,189 @@
+.pagina {
+  padding: 34px 0 60px;
+}
+
+.topo {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.colunas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+  gap: 22px;
+  margin-top: 26px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .colunas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.painel {
+  padding: 20px;
+}
+
+.grupo {
+  display: grid;
+  gap: 13px;
+}
+
+.grupo + .grupo {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1.5px dashed var(--ink-40);
+}
+
+.tituloGrupo {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+}
+
+.linha {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.rotulo {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.cor {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.corAmostra {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.marcas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.marca {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.marca input {
+  margin-top: 3px;
+  width: 17px;
+  height: 17px;
+  accent-color: var(--orange);
+  flex: 0 0 auto;
+}
+
+.marcaNota {
+  display: block;
+  font-size: 12.5px;
+  color: var(--ink-60);
+}
+
+.previa {
+  position: sticky;
+  top: 16px;
+  padding: 16px;
+}
+
+.previaTira {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.previaCard {
+  width: 132px;
+  flex: 0 0 auto;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.acoes {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.aviso {
+  margin-top: 14px;
+  padding: 11px 13px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.avisoErro {
+  background: var(--orange-soft);
+  border-color: var(--orange);
+}
+
+.avisoOk {
+  background: #f0fae0;
+}
+
+.lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.item {
+  padding: 13px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: left;
+}
+
+.itemNome {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.itemMeta {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+}
+
+.rascunho {
+  color: var(--orange);
+}
+
+.vazio {
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--ink-60);
+}

@@ -51,6 +51,28 @@ function IconeChapeu() {
   );
 }
 
+function IconeRegua() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect
+        x="1.6"
+        y="5"
+        width="12.8"
+        height="6"
+        rx="1.4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M4.6 5v2M7 5v3M9.4 5v2M11.8 5v3"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 /**
  * Cabeçalho global. O saldo vem do banco; as rotas devolvem o valor novo a
  * cada geração e anunciam pelo evento, então não há polling nem prop drilling.
@@ -59,6 +81,7 @@ export function Cabecalho({ paginaAtual, onProjetos }) {
   const router = useRouter();
   const [creditos, setCreditos] = useState(null);
   const [ilimitado, setIlimitado] = useState(false);
+  const [admin, setAdmin] = useState(false);
   const [email, setEmail] = useState("");
 
   useEffect(() => {
@@ -68,6 +91,7 @@ export function Cabecalho({ paginaAtual, onProjetos }) {
       if (!vivo) return;
       setCreditos(saldo?.creditos ?? null);
       setIlimitado(Boolean(saldo?.ilimitado));
+      setAdmin(Boolean(saldo?.admin));
       setEmail(usuario?.email || "");
     })();
     return () => {
@@ -123,6 +147,18 @@ export function Cabecalho({ paginaAtual, onProjetos }) {
           >
             Ver Planos
           </Link>
+          {/* Só aparece pra admin. Esconder aqui é conveniência: quem barra
+              de verdade é o RLS da tabela `templates`. */}
+          {admin && (
+            <Link
+              href="/estudio"
+              className={`${s.navBtn} ${s.navBtnDestaque}`}
+              aria-current={paginaAtual === "estudio" ? "page" : undefined}
+            >
+              <IconeRegua />
+              Estúdio
+            </Link>
+          )}
           <Link
             href="/planos"
             className={`${s.credits} ${

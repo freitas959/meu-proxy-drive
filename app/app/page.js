@@ -10,7 +10,7 @@ import ModalProjetos from "@/components/ModalProjetos";
 import { novoId, salvarProjeto } from "@/lib/store";
 import { anunciarSaldo } from "@/lib/conta";
 import { salvarImagens } from "@/lib/imagens";
-import { getTemplate } from "@/lib/templates";
+import { acharTemplate } from "@/lib/catalogo";
 import s from "./wizard.module.css";
 
 const DADOS_INICIAIS = {
@@ -206,8 +206,8 @@ export default function AppCarrossel() {
   }
 
   /** Restaura um projeto salvo direto no passo 4, pronto pra baixar de novo. */
-  function abrirProjeto(projeto) {
-    const tpl = getTemplate(projeto.templateId);
+  async function abrirProjeto(projeto) {
+    const tpl = await acharTemplate(projeto.templateId);
     if (!tpl || !projeto.roteiro?.length) return;
 
     projetoId.current = projeto.id;

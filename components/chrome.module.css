@@ -255,3 +255,16 @@ button.step:disabled {
     padding: 10px 16px;
   }
 }
+
+/* O estúdio só aparece pra admin; o traço pontilhado marca que é ferramenta
+   de bastidor, não item do produto. */
+.navBtnDestaque {
+  border-style: dashed;
+  border-color: var(--orange);
+  color: var(--orange);
+  font-weight: 700;
+}
+
+.navBtnDestaque:hover {
+  background: var(--orange-soft);
+}

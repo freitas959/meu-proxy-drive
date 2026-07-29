@@ -33,7 +33,7 @@ export async function middleware(req) {
 
   // O wizard sem sessão só levaria a um 401 na primeira geração. Melhor pedir
   // o login antes de a pessoa escrever o tema inteiro.
-  if (!user && caminho.startsWith("/app")) {
+  if (!user && (caminho.startsWith("/app") || caminho.startsWith("/estudio"))) {
     const destino = req.nextUrl.clone();
     destino.pathname = "/entrar";
     destino.search = "";

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import CardCanvas from "./CardCanvas";
 import { getProjetos, removerProjeto, salvarProjeto } from "@/lib/store";
 import { carregarImagens, apagarImagens } from "@/lib/imagens";
-import { getTemplate } from "@/lib/templates";
+import { acharTemplate } from "@/lib/catalogo";
 import s from "./projetos.module.css";
 
 function quando(ts) {
@@ -52,16 +52,18 @@ function Cartao({ projeto, onAbrir, onRenomear, onApagar }) {
   const [rascunho, setRascunho] = useState(projeto.titulo);
   const [confirmando, setConfirmando] = useState(false);
 
-  const template = getTemplate(projeto.templateId);
+  const [template, setTemplate] = useState(null);
   const capa = projeto.roteiro?.[0];
 
   useEffect(() => {
     let vivo = true;
     carregarImagens(projeto.id).then((imgs) => vivo && setImagens(imgs));
+    // O template pode ser do estúdio, e aí ele mora no banco, não no código.
+    acharTemplate(projeto.templateId).then((t) => vivo && setTemplate(t));
     return () => {
       vivo = false;
     };
-  }, [projeto.id]);
+  }, [projeto.id, projeto.templateId]);
 
   function confirmarNome() {
     const limpo = rascunho.trim();

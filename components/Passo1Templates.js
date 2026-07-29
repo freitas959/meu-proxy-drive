@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { TEMPLATES, buscarTemplates, FUNDOS } from "@/lib/templates";
+import { TEMPLATES, FUNDOS } from "@/lib/templates";
+import { carregarCatalogo, filtrar } from "@/lib/catalogo";
 import CardCanvas from "./CardCanvas";
 import s from "@/app/app/wizard.module.css";
 
@@ -167,8 +168,19 @@ function ModalTemplate({ template, onFechar, onUsar }) {
 export default function Passo1Templates({ onEscolher }) {
   const [busca, setBusca] = useState("");
   const [aberto, setAberto] = useState(null);
+  // Começa com os do código e troca pela lista completa quando o banco
+  // responde: assim a tela nunca aparece vazia esperando rede.
+  const [catalogo, setCatalogo] = useState(TEMPLATES);
 
-  const lista = useMemo(() => buscarTemplates(busca), [busca]);
+  useEffect(() => {
+    let vivo = true;
+    carregarCatalogo().then((lista) => vivo && setCatalogo(lista));
+    return () => {
+      vivo = false;
+    };
+  }, []);
+
+  const lista = useMemo(() => filtrar(catalogo, busca), [catalogo, busca]);
 
   return (
     <>

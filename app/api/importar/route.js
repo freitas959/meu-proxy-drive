@@ -1,5 +1,5 @@
 import { getCliente, semChave, extrairFerramenta } from "@/lib/anthropic";
-import { getTemplate } from "@/lib/templates";
+import { acharTemplateServidor } from "@/lib/catalogoServidor";
 import { erroAnthropic } from "@/lib/erros";
 import { cobrar, devolver, exigirUsuario } from "@/lib/creditos";
 import { CUSTOS } from "@/lib/custos";
@@ -63,7 +63,7 @@ export async function POST(req) {
     );
   }
 
-  const template = getTemplate(templateId);
+  const template = await acharTemplateServidor(sessao.supabase, templateId);
   const total = Math.min(Math.max(Number(slides) || 6, 3), 10);
 
   const cobranca = await cobrar(sessao, CUSTOS.importar, "importar");
