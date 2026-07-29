@@ -45,16 +45,21 @@ const PLANOS = [
 
 export default function Planos() {
   const [saldo, setSaldo] = useState(null);
+  const [ilimitado, setIlimitado] = useState(false);
 
   useEffect(() => {
     let vivo = true;
-    buscarSaldo().then((valor) => vivo && setSaldo(valor));
+    buscarSaldo().then((valor) => {
+      if (!vivo || !valor) return;
+      setSaldo(valor.creditos);
+      setIlimitado(valor.ilimitado);
+    });
     return () => {
       vivo = false;
     };
   }, []);
 
-  useEffect(() => ouvirSaldo(setSaldo), []);
+  useEffect(() => ouvirSaldo((valor) => !ilimitado && setSaldo(valor)), [ilimitado]);
 
   return (
     <>
@@ -132,10 +137,20 @@ export default function Planos() {
         </div>
 
         <p className="hint" style={{ marginTop: 22 }}>
-          A cobrança ainda não está ligada. Seu saldo agora é de{" "}
-          <strong>{saldo === null ? "—" : saldo} créditos</strong>, e ele vive no servidor: os
-          botões acima não mexem nele, e o navegador também não. Enquanto o pagamento não entra,
-          quem ajusta saldo é o administrador, direto no banco.
+          A cobrança ainda não está ligada.{" "}
+          {ilimitado ? (
+            <>
+              Sua conta está marcada como <strong>ilimitada</strong>: as gerações não descontam
+              crédito nenhum. O consumo continua registrado, porque a chamada à IA custa dinheiro
+              de verdade mesmo quando não custa crédito.
+            </>
+          ) : (
+            <>
+              Seu saldo agora é de <strong>{saldo === null ? "—" : saldo} créditos</strong>, e ele
+              vive no servidor: os botões acima não mexem nele, e o navegador também não. Enquanto
+              o pagamento não entra, quem ajusta saldo é o administrador, direto no banco.
+            </>
+          )}
         </p>
       </main>
 

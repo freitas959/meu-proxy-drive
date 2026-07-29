@@ -58,6 +58,7 @@ function IconeChapeu() {
 export function Cabecalho({ paginaAtual, onProjetos }) {
   const router = useRouter();
   const [creditos, setCreditos] = useState(null);
+  const [ilimitado, setIlimitado] = useState(false);
   const [email, setEmail] = useState("");
 
   useEffect(() => {
@@ -65,7 +66,8 @@ export function Cabecalho({ paginaAtual, onProjetos }) {
     (async () => {
       const [saldo, usuario] = await Promise.all([buscarSaldo(), getUsuarioAtual()]);
       if (!vivo) return;
-      setCreditos(saldo);
+      setCreditos(saldo?.creditos ?? null);
+      setIlimitado(Boolean(saldo?.ilimitado));
       setEmail(usuario?.email || "");
     })();
     return () => {
@@ -73,7 +75,9 @@ export function Cabecalho({ paginaAtual, onProjetos }) {
     };
   }, []);
 
-  useEffect(() => ouvirSaldo(setCreditos), []);
+  // As rotas devolvem o saldo depois de cada geração. Numa conta ilimitada ele
+  // volta sempre igual, então não há o que atualizar.
+  useEffect(() => ouvirSaldo((valor) => !ilimitado && setCreditos(valor)), [ilimitado]);
 
   async function encerrar() {
     await sair();
@@ -121,11 +125,13 @@ export function Cabecalho({ paginaAtual, onProjetos }) {
           </Link>
           <Link
             href="/planos"
-            className={`${s.credits} ${creditos !== null && creditos < 10 ? s.creditsLow : ""}`}
-            title="Seu saldo de créditos"
+            className={`${s.credits} ${
+              !ilimitado && creditos !== null && creditos < 10 ? s.creditsLow : ""
+            }`}
+            title={ilimitado ? "Conta ilimitada" : "Seu saldo de créditos"}
           >
             <IconeDiamante />
-            {creditos === null ? "—" : creditos} créditos
+            {ilimitado ? "ilimitado" : `${creditos === null ? "—" : creditos} créditos`}
           </Link>
           {email ? (
             <button

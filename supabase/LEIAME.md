@@ -71,6 +71,26 @@ usuário específico sem apagar a conta dele:
 update public.perfis set bloqueado = true where email = 'quem@exemplo.com';
 ```
 
+## Conta ilimitada
+
+```sql
+update public.perfis set ilimitado = true where email = 'voce@exemplo.com';
+```
+
+Gera sem gastar crédito e sem esbarrar no teto diário pessoal. **O teto global
+continua valendo** — se algo entrar em laço e disparar mil chamadas, é a fatura
+da API que sangra, e esse é o único freio.
+
+O consumo continua sendo registrado em `transacoes`, com ` (ilimitado)` no
+motivo. Sem isso não haveria como saber quanto a conta de casa custa de API:
+
+```sql
+select date_trunc('day', criado_em) as dia, -sum(quantia) as creditos_equivalentes
+  from public.transacoes
+ where quantia < 0 and motivo like '%(ilimitado)'
+ group by 1 order by 1 desc;
+```
+
 ## O que foi testado no banco de verdade
 
 Com dois usuários de teste, criados e apagados depois:

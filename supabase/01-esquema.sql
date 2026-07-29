@@ -13,9 +13,15 @@ create table if not exists public.perfis (
   email         text,
   creditos      integer     not null default 9 check (creditos >= 0),
   bloqueado     boolean     not null default false,
+  -- Conta de casa: gera sem gastar. O teto global continua valendo.
+  ilimitado     boolean     not null default false,
   criado_em     timestamptz not null default now(),
   atualizado_em timestamptz not null default now()
 );
+
+-- Para bancos criados antes desta coluna existir.
+alter table public.perfis
+  add column if not exists ilimitado boolean not null default false;
 
 create table if not exists public.projetos (
   id            uuid primary key default gen_random_uuid(),
@@ -104,6 +110,7 @@ as $$
 declare
   v_usuario        uuid := auth.uid();
   v_saldo          integer;
+  v_ilimitado      boolean;
   v_gasto_hoje     integer;
   v_gasto_global   integer;
   v_limites        jsonb;
@@ -122,13 +129,32 @@ begin
   v_limite_usuario := coalesce((v_limites->>'limite_diario_usuario')::integer, 60);
   v_limite_global  := coalesce((v_limites->>'limite_diario_global')::integer, 2000);
 
-  select creditos into v_saldo
+  select creditos, ilimitado into v_saldo, v_ilimitado
     from public.perfis
    where id = v_usuario and not bloqueado
      for update;
 
   if v_saldo is null then
     raise exception 'perfil_indisponivel' using errcode = '28000';
+  end if;
+
+  -- O teto global vale para todo mundo, ilimitado inclusive: se algo entrar
+  -- em laço, é a fatura da API que sangra, e este é o único freio.
+  select coalesce(-sum(quantia), 0) into v_gasto_global
+    from public.transacoes
+   where quantia < 0
+     and criado_em >= date_trunc('day', now());
+
+  if v_gasto_global + p_quantia > v_limite_global then
+    raise exception 'limite_diario_global' using errcode = '22023';
+  end if;
+
+  if v_ilimitado then
+    -- Registra o consumo mesmo sem debitar: sem isso não dá para saber
+    -- quanto a conta ilimitada está custando de API.
+    insert into public.transacoes (usuario_id, quantia, motivo, projeto_id)
+    values (v_usuario, -p_quantia, p_motivo || ' (ilimitado)', p_projeto_id);
+    return v_saldo;
   end if;
 
   if v_saldo < p_quantia then
@@ -143,15 +169,6 @@ begin
 
   if v_gasto_hoje + p_quantia > v_limite_usuario then
     raise exception 'limite_diario_usuario' using errcode = '22023';
-  end if;
-
-  select coalesce(-sum(quantia), 0) into v_gasto_global
-    from public.transacoes
-   where quantia < 0
-     and criado_em >= date_trunc('day', now());
-
-  if v_gasto_global + p_quantia > v_limite_global then
-    raise exception 'limite_diario_global' using errcode = '22023';
   end if;
 
   update public.perfis
@@ -186,7 +203,8 @@ security definer
 set search_path = public
 as $$
 declare
-  v_saldo integer;
+  v_saldo     integer;
+  v_ilimitado boolean;
 begin
   if p_usuario is null then
     raise exception 'usuario_ausente' using errcode = '22023';
@@ -196,18 +214,27 @@ begin
     raise exception 'quantia_invalida' using errcode = '22023';
   end if;
 
-  update public.perfis
-     set creditos = creditos + p_quantia,
-         atualizado_em = now()
-   where id = p_usuario
-  returning creditos into v_saldo;
+  select creditos, ilimitado into v_saldo, v_ilimitado
+    from public.perfis where id = p_usuario for update;
 
   if v_saldo is null then
     raise exception 'perfil_indisponivel' using errcode = '28000';
   end if;
 
   insert into public.transacoes (usuario_id, quantia, motivo)
-  values (p_usuario, p_quantia, p_motivo);
+  values (p_usuario, p_quantia, p_motivo || (case when v_ilimitado then ' (ilimitado)' else '' end));
+
+  -- Em conta ilimitada nada foi debitado; devolver aqui inflaria o saldo a
+  -- cada falha da IA.
+  if v_ilimitado then
+    return v_saldo;
+  end if;
+
+  update public.perfis
+     set creditos = creditos + p_quantia,
+         atualizado_em = now()
+   where id = p_usuario
+  returning creditos into v_saldo;
 
   return v_saldo;
 end;

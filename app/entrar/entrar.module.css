@@ -51,6 +51,37 @@
   margin-bottom: 6px;
 }
 
+.campoSenha {
+  position: relative;
+}
+
+/* Espaço à direita pro botão não cobrir o que está sendo digitado. */
+.entradaSenha {
+  padding-right: 46px;
+}
+
+.olho {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+  color: var(--ink-40);
+}
+
+.olho:hover {
+  color: var(--ink);
+  background: var(--orange-soft);
+}
+
+.olho[aria-pressed="true"] {
+  color: var(--orange);
+}
+
 .acao {
   margin-top: 4px;
   width: 100%;

@@ -24,6 +24,24 @@ function traduzir(mensagem = "") {
   return mensagem || "Não consegui completar essa ação.";
 }
 
+function IconeOlho({ aberto }) {
+  return (
+    <svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path
+        d="M1.7 10S4.6 4.8 10 4.8 18.3 10 18.3 10 15.4 15.2 10 15.2 1.7 10 1.7 10z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <circle cx="10" cy="10" r="2.6" stroke="currentColor" strokeWidth="1.6" />
+      {/* A barra cortando é o estado "escondida": some quando a senha aparece. */}
+      {!aberto && (
+        <path d="M3.5 3.5l13 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      )}
+    </svg>
+  );
+}
+
 function Marca() {
   return (
     <svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true">
@@ -43,6 +61,7 @@ export default function Entrar() {
   const [erro, setErro] = useState("");
   const [aviso, setAviso] = useState("");
   const [ocupado, setOcupado] = useState(false);
+  const [senhaVisivel, setSenhaVisivel] = useState(false);
 
   const cadastro = modo === "cadastrar";
 
@@ -126,17 +145,29 @@ export default function Entrar() {
             <label className={`mono-label ${s.rotulo}`} htmlFor="senha">
               Senha
             </label>
-            <input
-              id="senha"
-              className="field"
-              type="password"
-              autoComplete={cadastro ? "new-password" : "current-password"}
-              required
-              minLength={6}
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              placeholder={cadastro ? "pelo menos 6 caracteres" : "sua senha"}
-            />
+            <div className={s.campoSenha}>
+              <input
+                id="senha"
+                className={`field ${s.entradaSenha}`}
+                type={senhaVisivel ? "text" : "password"}
+                autoComplete={cadastro ? "new-password" : "current-password"}
+                required
+                minLength={6}
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                placeholder={cadastro ? "pelo menos 6 caracteres" : "sua senha"}
+              />
+              <button
+                type="button"
+                className={s.olho}
+                onClick={() => setSenhaVisivel((v) => !v)}
+                aria-label={senhaVisivel ? "Esconder senha" : "Mostrar senha"}
+                aria-pressed={senhaVisivel}
+                title={senhaVisivel ? "Esconder senha" : "Mostrar senha"}
+              >
+                <IconeOlho aberto={senhaVisivel} />
+              </button>
+            </div>
           </div>
 
           <button className={`btn btn-primary ${s.acao}`} type="submit" disabled={ocupado}>
