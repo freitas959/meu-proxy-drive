@@ -100,6 +100,16 @@ on conflict (id) do update
       file_size_limit    = excluded.file_size_limit,
       allowed_mime_types = excluded.allowed_mime_types;
 
+-- ATENÇÃO: bucket público dispensa policy para a URL pública, mas NÃO para o
+-- upload. A Storage API insere a linha com RETURNING, e RETURNING exige SELECT
+-- na linha recém-criada. Sem esta policy o upload falha com "new row violates
+-- row-level security policy" — mensagem que aponta para o INSERT e esconde que
+-- o problema é a leitura.
+drop policy if exists templates_capa_ler on storage.objects;
+create policy templates_capa_ler on storage.objects
+  for select to authenticated
+  using (bucket_id = 'templates');
+
 drop policy if exists templates_capa_enviar on storage.objects;
 create policy templates_capa_enviar on storage.objects
   for insert to authenticated
