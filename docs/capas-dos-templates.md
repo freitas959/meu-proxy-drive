@@ -2,140 +2,244 @@
 
 Uma imagem por template, para aparecer atrás do primeiro card na vitrine.
 
-## Antes de gerar: as três regras que fazem a capa funcionar
+> **Versão 2.** A primeira leva de prompts gerou imagens corretas tecnicamente e
+> sem graça nenhuma. Três erros meus: tirei as pessoas (e são elas que param o
+> dedo), pus papel e caderno no centro — objeto que carrega texto convida o
+> modelo a escrever garrancho — e escrevi cenas vagas demais, que devolvem cara
+> de banco de imagem. Refeito com pessoa onde o nicho é sobre gente, objeto onde
+> é sobre coisa, e direção fotográfica de verdade em cada um.
 
-O renderizador desenha o título **por cima** da imagem, ancorado embaixo, e
-aplica um degradê que escurece a base. Isso impõe três coisas:
+## As três regras que o renderizador impõe
 
-1. **Proporção 4:5 (vertical).** É o formato do card.
-2. **Terço inferior escuro e vazio.** É onde o texto entra. Assunto interessante
-   fica no terço de cima.
-3. **Nenhuma palavra na imagem.** Letra gerada por IA sai torta e ainda briga
-   com o título de verdade.
+O título é desenhado **por cima** da imagem, ancorado embaixo, com um degradê
+que escurece a base. Daí:
 
-Cole este bloco no fim de cada prompt:
+1. **4:5 vertical.** É o formato do card.
+2. **Assunto no terço superior**, sombra caindo no terço inferior. Não é
+   "escureça embaixo" — é compor de modo que embaixo não tenha nada importante.
+3. **Nenhuma palavra na imagem.** E, mais importante que pedir isso: **não
+   coloque papel, tela ou placa como protagonista**. Se o objeto pede texto, o
+   modelo escreve.
+
+## O bloco técnico
+
+Cole no fim de todo prompt:
 
 ```
-Proporção 4:5 vertical. Fotografia realista, sem nenhum texto, letra,
-número, logotipo ou marca d'água na imagem. O terço inferior deve ficar
-escuro e sem elementos importantes, para receber texto por cima depois.
-Sem pessoas identificáveis em primeiro plano.
+Vertical 4:5 composition. Photorealistic editorial photograph, full-frame
+camera, natural film grain. Place the subject in the upper two thirds; the
+bottom third must fall into deep shadow with no important detail. No text,
+letters, numbers, logos or watermarks anywhere in the image. No real or
+recognizable public figures.
 ```
+
+*(4:5 vertical. Fotografia editorial realista, câmera full-frame, grão natural.
+Assunto no terço superior; o terço inferior cai em sombra profunda, sem nada
+importante. Nenhum texto, letra, número, logo ou marca d'água. Nenhuma pessoa
+real ou reconhecível.)*
+
+## Como usar
+
+Gere **três ou quatro variações de cada** e escolha pelo terço inferior mais
+limpo — é o critério que mais importa aqui, mais que a beleza da cena.
+
+Descarte sem dó quando a mão sair com dedo a mais, que é o defeito mais comum
+em imagem com gente. Enquadramentos onde a mão está ocupada ou fora de quadro
+já reduzem bastante isso, e os prompts abaixo foram escritos assim.
 
 ## Como entregar
 
-Salve cada arquivo com o **id do template** no nome — é assim que eu ligo a
-imagem ao template certo:
+Nomeie cada arquivo com o **id do template**:
 
 ```
 insider.webp
 advocacia.webp
 nutricionista.webp
-...
 ```
 
-WebP ou JPG, no máximo 5 MB, largura entre 1080 e 1440. Me mande os arquivos e
-eu coloco em `public/templates/` e preencho o campo `capaUrl` de cada um.
-
-Depois disso, qualquer capa continua trocável pelo estúdio: **Editar** no
-template → **Imagem da capa** → **Subir imagem**. A versão do estúdio passa a
-valer por cima da que está no código.
+WebP ou JPG, até 5 MB, largura entre 1080 e 1440. Me mande que eu coloco em
+`public/templates/` e preencho o `capaUrl` de cada um. Depois disso, qualquer
+capa continua trocável pelo estúdio, em **Editar → Imagem da capa**.
 
 ---
 
-## Os prompts
+# Os prompts
+
+## Com pessoa
 
 ### insider — Insider
-> Mesa de trabalho vista de cima ao amanhecer, caderno aberto com anotações à
-> mão, xícara de café pela metade, caneta atravessada na página. Luz fria de
-> janela vindo da esquerda. Madeira escura, clima de quem começou cedo.
-
-### inteligencia-artificial — Inteligência Artificial
-> Placa-mãe em macro fotográfico, luz âmbar correndo pelas trilhas de cobre
-> como se fosse corrente elétrica. Fundo preto profundo, foco raso, reflexos
-> quentes nos componentes.
+```
+A woman in her thirties sitting alone in a bare concrete studio, leaning back
+in a wooden chair, eyes closed, exhausted but composed. Loose sheets of paper
+suspended in mid-air around her, frozen in motion. Hard directional light from
+a single tall window on camera left, deep black shadows on the right. 35mm
+lens, slight motion blur on the papers. Desaturated grey and black grade.
+```
+*Mulher parada numa cadeira, papéis congelados no ar em volta, luz dura de uma
+janela só. Foi a cena do original, e funciona.*
 
 ### advocacia — Advocacia
-> Caneta tinteiro apoiada sobre documento impresso em mesa de madeira escura.
-> Luz quente de abajur entrando pela lateral, sombra longa atravessando o
-> papel. Clima de escritório antigo, silencioso.
+```
+A man in his fifties wearing a dark tailored suit, standing in a classic law
+library, one hand resting on a bookshelf, looking off camera with quiet
+authority. Warm tungsten lamp glow behind him creating a rim light along his
+shoulder. 85mm f/1.8, shallow depth of field, bookshelves dissolving into
+bokeh. Deep amber and near-black grade.
+```
+*Advogado de terno na estante, luz quente por trás desenhando o ombro.*
 
 ### noticias-virais — Notícias Virais
-> Banca de jornal iluminada à noite em calçada molhada de chuva. Reflexo de
-> letreiros de neon no asfalto, vultos passando borrados pelo movimento.
-> Amarelo e âmbar dominando a luz.
+```
+A young woman standing still in a crowded avenue at night while everyone
+around her moves in motion blur, looking past the camera. Neon signage
+reflecting on wet asphalt. 35mm, 1/15s shutter, handheld documentary feel.
+Yellow and amber neon against deep black.
+```
+*Ela parada, a multidão borrada em volta. O contraste de movimento é o que
+segura o olho.*
 
 ### academia-fitness — Academia / Fitness
-> Halteres largados no chão de uma academia vazia ao amanhecer. Poeira suspensa
-> no facho de luz que entra pela janela alta. Piso de borracha, tons frios com
-> um toque de verde.
+```
+An athlete resting between sets in a dark gym, forearms on knees, head down,
+breathing hard, sweat on the shoulders. Single hard lime-green light from high
+behind, chalk dust suspended in the beam. 50mm, low camera angle. Black
+background, green rim light as the only colour.
+```
+*O descanso, não o esforço — combina com o texto do template.*
 
 ### clinica-estetica — Clínica de Estética
-> Frascos de vidro âmbar alinhados sobre bancada de mármore claro. Luz difusa
-> suave vinda de cima, sombras delicadas e alongadas. Composição minimalista,
-> muito espaço vazio.
+```
+Close portrait of a woman's face turned three quarters, eyes lowered, luminous
+untouched skin, against a deep neutral backdrop. Single large softbox on camera
+right with gentle falloff into shadow. 85mm f/2, shallow focus on the
+cheekbone. Warm champagne and dark chocolate grade.
+```
+*Retrato fechado, pele real, fundo escuro. Sem plástico.*
 
 ### nutricionista — Nutricionista
-> Feira livre pela manhã, caixotes de frutas e verduras coloridas em primeiro
-> plano, uma mão escolhendo um tomate. Luz natural, cores saturadas mas
-> naturais, movimento leve ao fundo.
+```
+A nutritionist in a bright kitchen laughing mid-gesture while plating a
+colourful bowl, fresh herbs and vegetables scattered on the counter. Soft
+daylight from a large window behind her. 35mm, natural colour, greens
+dominant. Foreground counter falling into shadow.
+```
+*Gesto e riso de verdade, não pose de banco de imagem.*
 
 ### imobiliaria — Imobiliária
-> Chave apoiada sobre uma planta baixa impressa, em mesa clara. Luz dourada de
-> fim de tarde entrando por uma janela fora de quadro. Foco raso na chave.
+```
+A couple seen from behind standing in an empty high-end apartment at dusk,
+looking out floor-to-ceiling windows at the city skyline. Warm golden light
+flooding in, long shadows across the bare floor. 24mm wide, architectural
+framing. Amber and deep brown grade.
+```
+*De costas resolve o rosto e ainda conta a história melhor.*
 
 ### marketing — Marketing
-> Parede coberta de post-its coloridos, um único deles em destaque no centro,
-> ligeiramente descolado. Luz roxa lateral, ambiente escuro, atmosfera de sala
-> de planejamento à noite.
+```
+A young person in profile in a dark room, face lit only by shifting purple and
+blue light, focused expression. Out-of-focus point lights behind. 85mm f/1.4,
+heavy bokeh. Violet and magenta grade over near-black.
+```
 
 ### noticias — Notícias
-> Painel de letras giratórias de estação ferroviária com as placas em pleno
-> movimento, congeladas pela fotografia. Iluminação fria, metal desgastado.
+```
+A person standing on a night street checking a phone, face lit from below by
+the screen glow, blurred traffic light streaks behind. 50mm, shallow depth of
+field, urgent documentary feel. Cold blue background with a single red light
+source.
+```
+*A tela ilumina o rosto mas fica fora de foco — nada de texto legível.*
 
 ### dentistas — Dentistas
-> Instrumentos odontológicos alinhados com precisão sobre pano azul claro.
-> Macro fotográfico, luz clínica difusa, aço polido refletindo. Assepsia
-> visível, nada de boca ou pessoa.
+```
+A dentist in scrubs standing in a modern clinic, arms crossed, warm confident
+smile, blurred equipment behind. Clean even lighting. 50mm f/2. Cyan and white
+palette, background falling off to deep teal at the bottom of the frame.
+```
 
 ### medicos-hospitalar — Médicos / Hospitalar
-> Estetoscópio apoiado sobre um jaleco branco dobrado, em superfície clara.
-> Luz azulada suave, composição minimalista e centrada, muito espaço negativo.
+```
+A doctor walking down a modern hospital corridor toward the camera, mid-stride,
+slightly soft focus. Cool blue light from ceiling panels, strong perspective
+lines. 50mm, shallow depth of field. Blue and steel grade, foreground floor in
+shadow.
+```
 
 ### beleza-estetica — Beleza e Estética
-> Pincéis de maquiagem e frascos dispostos sobre tecido rosado amassado. Luz
-> quente difusa, sombras suaves, textura do tecido bem visível.
+```
+A woman having her hair worked on in an upscale salon, seen through a mirror
+reflection, calm expression, warm lamps glowing behind her. 50mm f/1.8, shallow
+depth of field. Dusty rose and deep wine grade.
+```
+*O reflexo no espelho dá camada e resolve o enquadramento.*
 
 ### educacao-professores — Educação / Professores
-> Carteiras vazias de sala de aula em fileira, luz da manhã entrando pelas
-> janelas laterais. Giz e apagador na quina da mesa do professor em primeiro
-> plano. Tons de madeira e verde-quadro.
-
-### contabilidade-financeiro — Contabilidade e Financeiro
-> Calculadora antiga e bloco de anotações sobre mesa de madeira. Luz dourada
-> rasante da manhã atravessando o quadro, sombras compridas.
+```
+A teacher mid-explanation in front of a class, gesturing with one hand,
+genuinely animated. Students in the foreground rendered as dark out-of-focus
+silhouettes. Warm morning light from side windows. 35mm. Chalk yellow
+highlights against a dark board.
+```
+*As silhuetas dos alunos criam a moldura escura embaixo naturalmente.*
 
 ### turismo — Turismo
-> Mala aberta pela metade no chão de madeira, mapa dobrado e câmera analógica
-> ao lado. Luz de fim de tarde entrando de lado, clima de véspera de viagem.
+```
+A traveller standing on a coastal viewpoint at sunset, seen from behind, wind
+in their clothes, mountains meeting the sea ahead. Backlit by the low sun, soft
+lens flare. 35mm. Orange and teal grade, foreground rocks in deep shadow.
+```
 
 ### pets — Pets
-> Coleira e brinquedo de corda largados sobre o tapete da sala. Patas de
-> cachorro desfocadas ao fundo, se aproximando. Luz quente de fim de tarde.
+```
+A golden retriever sitting and looking up attentively at a hand just outside
+the frame, in a warm living room, late afternoon light through a window. 50mm
+f/1.8, shallow depth of field, camera at the dog's eye level. Caramel and amber
+grade, floor in shadow.
+```
+*A mão fora de quadro evita o defeito mais comum e ainda sugere o comando.*
+
+## Com objeto
+
+### inteligencia-artificial — Inteligência Artificial
+```
+A dark workshop bench with a partially disassembled machine, amber work light
+raking across brushed metal, fine dust suspended in the beam. 100mm macro,
+extreme shallow focus on one component, everything else swallowed by black.
+```
+*Troquei a placa de circuito: é a imagem mais batida que existe pra IA.*
+
+### contabilidade-financeiro — Contabilidade e Financeiro
+```
+Close-up of an old mechanical calculator on a dark wooden desk, raking golden
+morning light from the left carving long shadows across the keys. 100mm macro,
+shallow focus on the key row. Deep green and gold grade, background dissolving
+into black.
+```
 
 ### joias-semijoias — Joias e Semijoias
-> Anel e corrente delicada sobre veludo escuro. Luz pontual criando um brilho
-> controlado no metal, macro fotográfico, resto do quadro em penumbra.
+```
+A single fine gold chain draped over dark satin, one hard pin light raking
+across the metal creating a controlled specular highlight. 100mm macro, extreme
+shallow depth of field. Everything beyond the chain in complete black.
+```
 
 ### prompt-claro — Prompt · claro
-> Teclado mecânico antigo sobre mesa clara, uma folha de papel em branco ao
-> lado, canto levemente dobrado. Luz de estúdio suave, fundo creme, humor seco
-> e limpo.
+```
+An old mechanical typewriter on a cream-coloured table, three-quarter view, one
+completely blank sheet of paper curling out of the roller. Soft overhead studio
+light, clean minimal set. 50mm. Warm cream and black palette, table surface
+darkening toward the bottom edge.
+```
+*A folha tem que estar explicitamente em branco, senão vem garrancho.*
 
 ### prompt-escuro — Prompt · escuro
-> Luminária de mesa acesa iluminando um caderno fechado num quarto escuro. Um
-> único ponto de luz no quadro, o resto em sombra. Minimalista.
+```
+A single desk lamp switched on in an otherwise pitch-dark room, its cone of
+cold light falling on an empty desk surface. Everything else in near-total
+darkness. 35mm. Teal-tinted white light, black background.
+```
+
+## Sem capa
 
 ### post-rede-social — Post / Rede Social
-Este não usa imagem de capa: o layout imita um print de post, com fundo sólido.
-Pode pular.
+O layout imita um print de post, com fundo sólido. Não usa imagem.
