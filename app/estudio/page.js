@@ -15,7 +15,12 @@ import {
   estiloVazio,
 } from "@/lib/estilos";
 import { enviarCapa } from "@/lib/capaTemplate";
-import { getSupabase } from "@/lib/supabase/navegador";
+import {
+  AVISO_SESSAO,
+  ehErroDeSessao,
+  garantirSessao,
+  getSupabase,
+} from "@/lib/supabase/navegador";
 import s from "./estudio.module.css";
 
 const LAYOUTS = [
@@ -225,6 +230,12 @@ export default function Estudio() {
     }));
   }, []);
 
+  /** Erro de sessão merece a mensagem de sessão, não a do Postgres. */
+  const mostrarErro = useCallback((falha) => {
+    const mensagem = falha?.message || String(falha || "");
+    setErro(ehErroDeSessao(mensagem) ? AVISO_SESSAO : mensagem || "Não consegui completar.");
+  }, []);
+
   const recarregar = useCallback(async () => {
     const supabase = getSupabase();
     if (!supabase) return;
@@ -289,6 +300,7 @@ export default function Estudio() {
     setAviso("");
     setSalvando(true);
     try {
+      if (!(await garantirSessao())) throw new Error("token expirado");
       const supabase = getSupabase();
       const linha = paraLinha({ ...t, id, nome, publicado: publicar });
       const { error } = await supabase.from("templates").upsert(linha);
@@ -303,7 +315,7 @@ export default function Estudio() {
           : "Salvo como rascunho. Só você enxerga."
       );
     } catch (falha) {
-      setErro(falha.message || "Não consegui salvar.");
+      mostrarErro(falha);
     } finally {
       setSalvando(false);
     }
@@ -313,6 +325,7 @@ export default function Estudio() {
     if (!t.id) return;
     setSalvando(true);
     try {
+      if (!(await garantirSessao())) throw new Error("token expirado");
       const supabase = getSupabase();
       // Arquiva em vez de apagar: projeto antigo guarda o template_id e
       // deixaria de abrir se a linha sumisse.
@@ -326,7 +339,7 @@ export default function Estudio() {
       setT(VAZIO);
       setAviso("Arquivado. Sai da lista, mas os carrosséis já feitos continuam abrindo.");
     } catch (falha) {
-      setErro(falha.message || "Não consegui arquivar.");
+      mostrarErro(falha);
     } finally {
       setSalvando(false);
     }
@@ -338,11 +351,12 @@ export default function Estudio() {
     setAviso("");
     setCapaOcupada("upload");
     try {
+      if (!(await garantirSessao())) throw new Error("token expirado");
       const url = await enviarCapa(t.id || apelido(t.nome) || "rascunho", arquivo);
       mudar({ capaUrl: url });
       setAviso("Capa enviada. Salve o template para gravar a mudança.");
     } catch (falha) {
-      setErro(falha.message || "Não consegui subir a imagem.");
+      mostrarErro(falha);
     } finally {
       setCapaOcupada("");
     }
@@ -360,6 +374,7 @@ export default function Estudio() {
     setAviso("");
     setCapaOcupada("ia");
     try {
+      if (!(await garantirSessao())) throw new Error("token expirado");
       const resposta = await fetch("/api/capa", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -377,7 +392,7 @@ export default function Estudio() {
       mudar({ capaUrl: url });
       setAviso("Capa gerada. Salve o template para gravar a mudança.");
     } catch (falha) {
-      setErro(falha.message || "Não consegui gerar a imagem.");
+      mostrarErro(falha);
     } finally {
       setCapaOcupada("");
     }
