@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { renderizarCard, carregarFontes } from "@/lib/render";
+import { familiasDoTemplate } from "@/lib/estilos";
 
 /**
  * Prévia de um card. Desenha sempre em 1080px e deixa o CSS reduzir, então o
@@ -29,6 +30,7 @@ export default function CardCanvas({
   const chave = JSON.stringify({
     card,
     layout: template?.layout,
+    estilos: template?.estilos,
     paleta,
     fontes,
     tamanho,
@@ -45,7 +47,9 @@ export default function CardCanvas({
     let cancelado = false;
 
     (async () => {
-      await carregarFontes([fontes?.titulo, fontes?.corpo]);
+      // Inclui as fontes que os estilos por papel possam pedir, senão o card
+      // com fonte própria desenha no fallback.
+      await carregarFontes(familiasDoTemplate(template, fontes));
       const canvas = await renderizarCard({
         card,
         template,

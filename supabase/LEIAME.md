@@ -5,6 +5,7 @@ que está lá, e recriam o banco do zero nesta ordem:
 
 1. `01-esquema.sql` — tabelas, funções de crédito, RLS, permissões
 2. `02-storage.sql` — bucket das imagens e as políticas dele
+3. `03-estudio.sql` — coluna `admin`, tabela `templates` e o bucket das capas
 
 Os dois são idempotentes: rodar de novo não duplica nada nem apaga dados.
 
@@ -16,6 +17,26 @@ Os dois são idempotentes: rodar de novo não duplica nada nem apaga dados.
 | `projetos`   | template, paleta, fontes, roteiro e legenda de cada carrossel |
 | `transacoes` | histórico de todo débito e estorno — auditoria e limite diário |
 | `config`     | os limites do disjuntor, editáveis sem publicar código |
+| `templates`  | os templates criados no estúdio; os 19 do código continuam no código |
+
+## Estilo por papel do card
+
+`templates.estilos` guarda três blocos — `capa`, `conteudo`, `cta` — e o
+renderizador escolhe qual usar pela marca que a IA já põe em cada card. Por
+isso funciona igual num carrossel de 3 ou de 10.
+
+Cada cor guarda uma **referência** ou um valor fixo:
+
+| valor | significado |
+| ----- | ----------- |
+| `""` | herda o comportamento padrão do template |
+| `"@botoes"` | a cor de acento escolhida pelo cliente |
+| `"@fundo"`, `"@texto"`, `"@secundaria"` | idem, para as outras cores |
+| `"@contraste"` | preto ou branco, pelo brilho do fundo já resolvido |
+| `"#rrggbb"` | valor fixo |
+
+É a referência que faz um template servir a vários nichos: o card de CTA guarda
+`"@botoes"`, não dourado — e sai dourado no advogado, verde no nutricionista.
 
 ## As três regras que sustentam o resto
 

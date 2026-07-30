@@ -7,6 +7,7 @@ import CardCanvas from "@/components/CardCanvas";
 import { FONTES_CORPO, FONTES_TITULO, TEMPLATES } from "@/lib/templates";
 import { daLinha, paraLinha } from "@/lib/templatesBanco";
 import { invalidarCatalogo } from "@/lib/catalogo";
+import { CORES_DO_PAPEL, PAPEIS, REFERENCIAS, estiloVazio } from "@/lib/estilos";
 import { enviarCapa } from "@/lib/capaTemplate";
 import { getSupabase } from "@/lib/supabase/navegador";
 import s from "./estudio.module.css";
@@ -36,6 +37,7 @@ const VAZIO = {
   cenaCapa: "",
   capaUrl: "",
   descricao: "",
+  estilos: {},
   capaIA: true,
   numerarTitulo: false,
   destaqueCaixa: false,
@@ -99,6 +101,46 @@ function Cor({ rotulo, valor, onChange }) {
   );
 }
 
+/**
+ * Uma cor de um papel. O seletor escolhe entre herdar, apontar para uma cor da
+ * paleta do cliente, ou fixar — e só no caso "fixa" aparece o seletor de cor.
+ */
+function CorDoPapel({ rotulo, valor, onChange }) {
+  const fixa = typeof valor === "string" && valor.startsWith("#");
+  return (
+    <Campo rotulo={rotulo}>
+      <select
+        className="field"
+        value={fixa ? "#" : valor || ""}
+        onChange={(e) => onChange(e.target.value === "#" ? "#000000" : e.target.value)}
+      >
+        {REFERENCIAS.map((r) => (
+          <option key={r.id} value={r.id}>
+            {r.nome}
+          </option>
+        ))}
+      </select>
+      {fixa && (
+        <div className={s.cor} style={{ marginTop: 8 }}>
+          <input
+            className={s.corAmostra}
+            type="color"
+            value={valor}
+            onChange={(e) => onChange(e.target.value)}
+            aria-label={`${rotulo}: cor fixa`}
+          />
+          <input
+            className="field"
+            value={valor}
+            onChange={(e) => onChange(e.target.value)}
+            spellCheck={false}
+          />
+        </div>
+      )}
+    </Campo>
+  );
+}
+
 function Marca({ ligado, onChange, titulo, nota }) {
   return (
     <label className={s.marca}>
@@ -126,6 +168,16 @@ export default function Estudio() {
     (patch) => setT((atual) => ({ ...atual, paleta: { ...atual.paleta, ...patch } })),
     []
   );
+
+  const mudarEstilo = useCallback((papel, patch) => {
+    setT((atual) => ({
+      ...atual,
+      estilos: {
+        ...atual.estilos,
+        [papel]: { ...estiloVazio(), ...(atual.estilos?.[papel] || {}), ...patch },
+      },
+    }));
+  }, []);
 
   const recarregar = useCallback(async () => {
     const supabase = getSupabase();
@@ -429,6 +481,82 @@ export default function Estudio() {
                   </select>
                 </Campo>
               </div>
+            </div>
+
+            <div className={s.grupo}>
+              <span className={s.tituloGrupo}>Estilo por card</span>
+              <p className="hint">
+                O roteiro já marca cada card como capa, conteúdo ou CTA — o visual segue essa
+                marca, então funciona igual num carrossel de 3 ou de 10 cards. Deixar tudo em
+                &quot;padrão do template&quot; mantém o comportamento de sempre.
+              </p>
+              <p className="hint">
+                <strong>Acento do cliente</strong> é o que faz um card sair na cor da marca de
+                quem usa o template: dourado no advogado, verde no nutricionista. Para o texto
+                por cima dele, use <strong>contraste automático</strong>.
+              </p>
+
+              {PAPEIS.map((papel) => {
+                const estilo = t.estilos?.[papel.id] || {};
+                return (
+                  <div key={papel.id} className={s.papel}>
+                    <span className={s.papelNome}>
+                      {papel.nome}
+                      <span className={s.marcaNota}>{papel.nota}</span>
+                    </span>
+
+                    <div className={s.linha}>
+                      {CORES_DO_PAPEL.map(({ chave, nome }) => (
+                        <CorDoPapel
+                          key={chave}
+                          rotulo={nome}
+                          valor={estilo[chave] || ""}
+                          onChange={(v) => mudarEstilo(papel.id, { [chave]: v })}
+                        />
+                      ))}
+                    </div>
+
+                    <div className={s.linha}>
+                      <Campo rotulo="Fonte do título">
+                        <select
+                          className="field"
+                          value={estilo.fontes?.titulo || ""}
+                          onChange={(e) =>
+                            mudarEstilo(papel.id, {
+                              fontes: { ...(estilo.fontes || {}), titulo: e.target.value },
+                            })
+                          }
+                        >
+                          <option value="">Mesma do template</option>
+                          {FONTES_TITULO.map((f) => (
+                            <option key={f} value={f}>
+                              {f}
+                            </option>
+                          ))}
+                        </select>
+                      </Campo>
+                      <Campo rotulo="Fonte do corpo">
+                        <select
+                          className="field"
+                          value={estilo.fontes?.corpo || ""}
+                          onChange={(e) =>
+                            mudarEstilo(papel.id, {
+                              fontes: { ...(estilo.fontes || {}), corpo: e.target.value },
+                            })
+                          }
+                        >
+                          <option value="">Mesma do template</option>
+                          {FONTES_CORPO.map((f) => (
+                            <option key={f} value={f}>
+                              {f}
+                            </option>
+                          ))}
+                        </select>
+                      </Campo>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             <div className={s.grupo}>

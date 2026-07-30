@@ -4,6 +4,7 @@ import { useState } from "react";
 import CardCanvas from "./CardCanvas";
 import PreviaFeed from "./PreviaFeed";
 import { renderizarCard, carregarFontes, canvasParaBlob, baixarCanvas } from "@/lib/render";
+import { familiasDoTemplate } from "@/lib/estilos";
 import s from "@/app/app/wizard.module.css";
 
 function nomeArquivo(indice, total) {
@@ -34,7 +35,7 @@ export default function Passo4Imagens({
 
   /** Redesenha o card em resolução cheia — a prévia na tela é reduzida. */
   async function renderCheio(indice) {
-    await carregarFontes([fontes.titulo, fontes.corpo]);
+    await carregarFontes(familiasDoTemplate(template, fontes));
     return renderizarCard({
       card: roteiro[indice],
       template,

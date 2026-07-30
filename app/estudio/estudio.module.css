@@ -209,3 +209,18 @@
   opacity: 0.4;
   pointer-events: none;
 }
+
+/* blocos de estilo por papel do card */
+.papel {
+  border: 1.5px solid var(--ink);
+  border-radius: 9px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  background: #fbf8f2;
+}
+
+.papelNome {
+  font-weight: 700;
+  font-size: 15px;
+}
