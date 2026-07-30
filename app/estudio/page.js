@@ -156,6 +156,37 @@ function CorDoPapel({ rotulo, valor, onChange, resolvida }) {
   );
 }
 
+/**
+ * Miniatura do card de capa, para a lista. Desenha o card de verdade em vez de
+ * mostrar só a foto: assim aparecem a paleta, a fonte e a imagem juntas, que é
+ * o que de fato distingue um template do outro.
+ */
+function MiniCapa({ template }) {
+  const card = {
+    tipo: "hook",
+    selo: template.selos?.[0] || "",
+    titulo: template.exemplo?.titulo || template.nome,
+    texto: "",
+    palavraImpacto: "",
+    botao: "",
+  };
+  return (
+    <CardCanvas
+      className={s.mini}
+      card={card}
+      template={template}
+      paleta={template.paleta}
+      fontes={template.fontes}
+      tamanho="retrato"
+      indice={0}
+      total={4}
+      imagem={template.capaUrl || null}
+      ehCapa
+      escala={0.09}
+    />
+  );
+}
+
 function Marca({ ligado, onChange, titulo, nota }) {
   return (
     <label className={s.marca}>
@@ -785,17 +816,22 @@ export default function Estudio() {
           <div className={s.lista}>
             {salvos.map((item) => (
               <article key={item.id} className={`panel ${s.item}`}>
-                <span className={s.itemNome}>{item.nome}</span>
-                <span className={s.itemMeta}>
-                  {item.layout} ·{" "}
-                  {item.arquivado ? (
-                    "arquivado"
-                  ) : item.publicado ? (
-                    "publicado"
-                  ) : (
-                    <span className={s.rascunho}>rascunho</span>
-                  )}
-                </span>
+                <div className={s.itemTopo}>
+                  <MiniCapa template={item} />
+                  <div className={s.itemTexto}>
+                    <span className={s.itemNome}>{item.nome}</span>
+                    <span className={s.itemMeta}>
+                      {item.layout} ·{" "}
+                      {item.arquivado ? (
+                        "arquivado"
+                      ) : item.publicado ? (
+                        "publicado"
+                      ) : (
+                        <span className={s.rascunho}>rascunho</span>
+                      )}
+                    </span>
+                  </div>
+                </div>
                 <div className={s.acoes} style={{ marginTop: 6 }}>
                   <button type="button" className="btn btn-sm" onClick={() => setT(item)}>
                     Editar
@@ -821,8 +857,13 @@ export default function Estudio() {
         <div className={s.lista}>
           {TEMPLATES.map((item) => (
             <article key={item.id} className={`panel ${s.item}`}>
-              <span className={s.itemNome}>{item.nome}</span>
-              <span className={s.itemMeta}>{item.layout} · do sistema</span>
+              <div className={s.itemTopo}>
+                <MiniCapa template={item} />
+                <div className={s.itemTexto}>
+                  <span className={s.itemNome}>{item.nome}</span>
+                  <span className={s.itemMeta}>{item.layout} · do sistema</span>
+                </div>
+              </div>
               <div className={s.acoes} style={{ marginTop: 6 }}>
                 <button
                   type="button"

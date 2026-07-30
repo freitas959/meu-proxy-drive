@@ -241,3 +241,26 @@
   background: #fff8e1;
   border-color: #b8860b;
 }
+
+/* miniatura do card de capa na lista de templates */
+.itemTopo {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+}
+
+.itemTexto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mini {
+  width: 62px;
+  flex: 0 0 auto;
+  border: 1.5px solid var(--ink);
+  border-radius: 5px;
+  overflow: hidden;
+  line-height: 0;
+}
