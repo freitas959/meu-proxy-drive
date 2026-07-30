@@ -228,6 +228,10 @@ export default function Estudio() {
 
   const cards = useMemo(() => amostra(t), [t]);
 
+  // Editando um do sistema? O id igual ao de um template do código é o que
+  // define isso — e é o que faz esta versão substituir a original.
+  const sobrescreve = Boolean(t.id) && TEMPLATES.some((c) => c.id === t.id);
+
   async function salvar(publicar) {
     const nome = t.nome.trim();
     if (!nome) {
@@ -240,10 +244,13 @@ export default function Estudio() {
       setErro("Esse nome não gera um identificador válido. Use letras ou números.");
       return;
     }
-    // Um template do estúdio com o mesmo id de um do código seria invisível:
-    // o servidor procura no código primeiro e nunca chegaria no banco.
+    // Só barra a colisão ACIDENTAL: um template novo cujo nome gera o mesmo
+    // identificador de um do sistema o substituiria sem você querer. Editar um
+    // do sistema chega aqui com `t.id` já preenchido e passa direto.
     if (!t.id && TEMPLATES.some((codigo) => codigo.id === id)) {
-      setErro(`Já existe um template do sistema com o identificador "${id}". Troque o nome.`);
+      setErro(
+        `"${id}" é o identificador de um template do sistema. Troque o nome, ou use o botão Editar na lista dele se a intenção é substituí-lo.`
+      );
       return;
     }
 
@@ -345,6 +352,19 @@ export default function Estudio() {
     }
   }
 
+  /**
+   * Edita um template do sistema. Se já existe uma versão no banco para aquele
+   * id, carrega ela; senão parte do original do código, guardando o mesmo id —
+   * é o id igual que faz a versão do banco substituir a do código.
+   */
+  function editarDoSistema(base) {
+    const existente = salvos.find((s) => s.id === base.id);
+    setT(existente || { ...VAZIO, ...base, id: base.id, publicado: false, arquivado: false });
+    setAviso("");
+    setErro("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function duplicar(base) {
     setT({
       ...base,
@@ -390,6 +410,14 @@ export default function Estudio() {
             </button>
           )}
         </div>
+
+        {sobrescreve && (
+          <p className={`${s.aviso} ${s.avisoAtencao}`}>
+            Você está editando <strong>{t.nome}</strong>, um template do sistema. Ao publicar,
+            esta versão passa a valer no lugar da original para todo mundo. Se quiser voltar
+            atrás, é só arquivar — a original reaparece sozinha.
+          </p>
+        )}
 
         <div className={s.colunas}>
           <div className={`panel ${s.painel}`}>
@@ -785,8 +813,10 @@ export default function Estudio() {
           Partir de um do sistema
         </h2>
         <p className="hint">
-          Os 19 templates do código não são editáveis — eles vivem no repositório. Duplique um
-          para ter uma cópia sua, editável, no estúdio.
+          <strong>Editar</strong> cria uma versão no banco que passa a valer no lugar da
+          original — e arquivar depois devolve a original, porque o código continua lá intacto.
+          <strong> Duplicar</strong> faz uma cópia com identificador novo, deixando a original
+          onde está.
         </p>
         <div className={s.lista}>
           {TEMPLATES.map((item) => (
@@ -794,6 +824,13 @@ export default function Estudio() {
               <span className={s.itemNome}>{item.nome}</span>
               <span className={s.itemMeta}>{item.layout} · do sistema</span>
               <div className={s.acoes} style={{ marginTop: 6 }}>
+                <button
+                  type="button"
+                  className="btn btn-sm"
+                  onClick={() => editarDoSistema(item)}
+                >
+                  Editar
+                </button>
                 <button type="button" className="btn btn-sm" onClick={() => duplicar(item)}>
                   Duplicar
                 </button>
