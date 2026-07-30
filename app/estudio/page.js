@@ -7,7 +7,13 @@ import CardCanvas from "@/components/CardCanvas";
 import { FONTES_CORPO, FONTES_TITULO, TEMPLATES } from "@/lib/templates";
 import { daLinha, paraLinha } from "@/lib/templatesBanco";
 import { invalidarCatalogo } from "@/lib/catalogo";
-import { CORES_DO_PAPEL, PAPEIS, REFERENCIAS, estiloVazio } from "@/lib/estilos";
+import {
+  CORES_DO_PAPEL,
+  PAPEIS,
+  REFERENCIAS,
+  coresResolvidas,
+  estiloVazio,
+} from "@/lib/estilos";
 import { enviarCapa } from "@/lib/capaTemplate";
 import { getSupabase } from "@/lib/supabase/navegador";
 import s from "./estudio.module.css";
@@ -105,10 +111,19 @@ function Cor({ rotulo, valor, onChange }) {
  * Uma cor de um papel. O seletor escolhe entre herdar, apontar para uma cor da
  * paleta do cliente, ou fixar — e só no caso "fixa" aparece o seletor de cor.
  */
-function CorDoPapel({ rotulo, valor, onChange }) {
+function CorDoPapel({ rotulo, valor, onChange, resolvida }) {
   const fixa = typeof valor === "string" && valor.startsWith("#");
   return (
-    <Campo rotulo={rotulo}>
+    <Campo
+      rotulo={
+        <>
+          {rotulo}
+          {/* A cor em que a escolha dá, com a paleta atual. É o que explica
+              por que "fundo do cliente" no campo de fundo não muda nada. */}
+          <span className={s.resolvida} style={{ background: resolvida }} title={resolvida} />
+        </>
+      }
+    >
       <select
         className="field"
         value={fixa ? "#" : valor || ""}
@@ -511,6 +526,7 @@ export default function Estudio() {
                           key={chave}
                           rotulo={nome}
                           valor={estilo[chave] || ""}
+                          resolvida={coresResolvidas(estilo, t.paleta)[chave]}
                           onChange={(v) => mudarEstilo(papel.id, { [chave]: v })}
                         />
                       ))}
