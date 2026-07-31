@@ -7,20 +7,24 @@
 /**
  * Vai colado no fim de todo prompt.
  *
- * O "metade de cima" não é preciosismo: o título é desenhado a partir de uns
- * 65% da altura do card. Pedir o assunto no terço superior deixava uma faixa
- * inteira de sobreposição, e foi ali que o prato, o rosto e a máquina de
- * escrever foram parar — cobertos pelo texto.
+ * Já tentei duas vezes empurrar o assunto para cima só com texto ("terço
+ * superior", depois "metade de cima") e o modelo continuou centralizando. Quem
+ * resolve a posição agora é o `desenharCapa()` do render: ele corta uma fatia
+ * do topo e ancora o centro da foto acima do bloco de texto.
+ *
+ * Por isso aqui o pedido voltou a ser uma composição normal, centralizada — é
+ * o que o modelo faz bem. A única exigência é margem: o render descarta os
+ * ~15% de cima e o véu escuro cobre os ~15% de baixo, então nada essencial
+ * pode encostar nas bordas horizontais.
  */
 export const BLOCO_TECNICO = `
 Vertical 4:5 composition. Photorealistic editorial photograph, full-frame
 camera, natural film grain.
 
-CRITICAL FRAMING: the main subject must sit entirely within the TOP HALF of
-the frame. The bottom 45% of the image must be empty — plain background,
-shadow, floor or out-of-focus surface — with no subject, no face, no product
-and no important detail, because large text will be placed over it. Compose
-with generous empty space below the subject.
+FRAMING: centre the main subject in the frame, at a comfortable distance —
+not a tight crop. Leave breathing room at the top and bottom edges: the top
+15% and the bottom 15% of the image are trimmed in layout, so no face, no
+product and no essential detail may touch either edge.
 
 No text, letters, numbers, logos or watermarks anywhere in the image. No real
 or recognizable public figures.`;
@@ -36,7 +40,7 @@ export const PROMPTS = {
 
   "academia-fitness": `An athlete resting between sets in a dark gym, forearms on knees, head down, breathing hard, sweat on the shoulders. Single hard lime-green light from high behind, chalk dust suspended in the beam. 50mm, low camera angle. Black background, green rim light as the only colour.`,
 
-  "clinica-estetica": `A woman's face in three-quarter view, eyes lowered, luminous untouched skin, framed high in the upper half of the image with her shoulders barely entering the frame. Deep neutral backdrop. Single large softbox on camera right with gentle falloff. 85mm f/2, shallow focus on the cheekbone. Warm champagne and dark chocolate grade; the lower half of the frame is empty backdrop falling into shadow.`,
+  "clinica-estetica": `A woman's face in three-quarter view, eyes lowered, luminous untouched skin, centred in the frame with her shoulders visible. Deep neutral backdrop. Single large softbox on camera right with gentle falloff. 85mm f/2, shallow focus on the cheekbone. Warm champagne and dark chocolate grade, the backdrop falling into shadow around her.`,
 
   nutricionista: `A nutritionist in a bright kitchen laughing mid-gesture while plating a colourful bowl, fresh herbs and vegetables scattered on the counter. Soft daylight from a large window behind her. 35mm, natural colour, greens dominant. Foreground counter falling into shadow.`,
 
@@ -54,11 +58,11 @@ export const PROMPTS = {
 
   "educacao-professores": `A teacher mid-explanation in front of a class, gesturing with one hand, genuinely animated. Students in the foreground rendered as dark out-of-focus silhouettes. Warm morning light from side windows. 35mm. Chalk yellow highlights against a dark board.`,
 
-  hamburgueria: `A handmade burger shot from a high three-quarter angle, sitting in the upper portion of the frame on a dark wooden board. Melted cheese spilling, steam rising, sesame bun glistening under a hard warm light from camera left. 100mm macro, very shallow depth of field. Ember orange and burnt brown grade; the board and table run empty and dark toward the bottom of the frame.`,
+  hamburgueria: `A handmade burger shot from a high three-quarter angle, centred on a dark wooden board. Melted cheese spilling down the side, steam rising, sesame bun glistening under a hard warm light from camera left. 100mm macro, very shallow depth of field. Ember orange and burnt brown grade, the board falling into darkness at the edges.`,
 
   pizzaria: `A pizzaiolo pulling a pizza out of a wood-fired oven on a long metal peel, flames visible inside the oven mouth, flour dust and sparks suspended in the air, face lit from below by the fire. 35mm, slight motion blur on the peel. Amber and deep black grade, everything below the oven in shadow.`,
 
-  restaurante: `A beautifully plated dish shot from a high three-quarter angle, positioned in the upper portion of the frame, on a dark restaurant table at night. A single warm pendant lamp above pours light straight onto the food, making it the brightest thing in the picture — glistening sauce, visible texture, steam. Cutlery and a wine glass out of focus at the edges. 50mm f/2. Copper and near-black grade; the table surface in front of the dish runs empty and dark toward the bottom of the frame.`,
+  restaurante: `A beautifully plated dish shot from a high three-quarter angle, centred in the frame, on a dark restaurant table at night. A single warm pendant lamp above pours light straight onto the food, making it by far the brightest thing in the picture — glistening sauce, visible texture, steam rising. Cutlery and a wine glass out of focus at the edges. 50mm f/2. Copper and near-black grade, the table falling into darkness around the plate.`,
 
   "contabilidade-financeiro": `Close-up of an old mechanical calculator on a dark wooden desk, raking golden morning light from the left carving long shadows across the keys. 100mm macro, shallow focus on the key row. Deep green and gold grade, background dissolving into black.`,
 
@@ -68,9 +72,9 @@ export const PROMPTS = {
 
   "joias-semijoias": `A single fine gold chain draped over dark satin, one hard pin light raking across the metal creating a controlled specular highlight. 100mm macro, extreme shallow depth of field. Everything beyond the chain in complete black.`,
 
-  "prompt-claro": `An old mechanical typewriter on a cream-coloured table, three-quarter view, placed high in the upper half of the frame, one completely blank sheet of paper curling out of the roller. Soft overhead studio light, clean minimal set. 50mm. Warm cream and black palette; the empty table surface fills the lower half and darkens toward the bottom edge.`,
+  "prompt-claro": `An old mechanical typewriter on a cream-coloured table, three-quarter view, centred in the frame, one completely blank sheet of paper curling out of the roller. Soft overhead studio light, clean minimal set. 50mm. Warm cream and black palette, the empty table darkening toward the edges.`,
 
-  "prompt-escuro": `A single desk lamp switched on in a pitch-dark room, the lamp itself high in the upper half of the frame, its cone of cold light falling onto an empty desk. Everything else in near-total darkness. 35mm. Teal-tinted white light, black background; the lower half of the frame is empty desk surface fading to black.`,
+  "prompt-escuro": `A single desk lamp switched on in a pitch-dark room, centred in the frame, its cone of cold light falling onto an empty desk. Everything else in near-total darkness. 35mm. Teal-tinted white light, black background.`,
 };
 
 /** O prompt completo, já com o bloco técnico. */

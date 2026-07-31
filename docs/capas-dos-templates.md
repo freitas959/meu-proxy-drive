@@ -50,13 +50,22 @@ O título é desenhado **por cima** da imagem, ancorado embaixo, com um degradê
 que escurece a base. Daí:
 
 1. **4:5 vertical.** É o formato do card.
-2. **Assunto inteiro na METADE DE CIMA**, metade de baixo vazia. Não é o terço
-   superior: o título começa por volta de **65% da altura**, então pedir o
-   terço superior deixa uma faixa inteira de sobreposição — foi assim que o
-   prato do restaurante e o rosto da clínica foram parar debaixo do texto.
+2. **Assunto centralizado, com folga nas bordas de cima e de baixo.** Quem tira
+   o assunto de baixo do título não é o prompt — é o `desenharCapa()` do
+   `lib/render.js`, que corta uma fatia do topo e ancora o centro da foto acima
+   do bloco de texto. O prompt só precisa garantir que os ~15% de cima (que o
+   render descarta) e os ~15% de baixo (que o véu escurece) não tenham nada
+   essencial.
 3. **Nenhuma palavra na imagem.** E, mais importante que pedir isso: **não
    coloque papel, tela ou placa como protagonista**. Se o objeto pede texto, o
    modelo escreve.
+
+> **Por que não se pede mais "assunto na metade de cima".** Foi tentado duas
+> vezes — "terço superior", depois "metade de cima" — e o modelo continuou
+> centralizando o prato, o rosto e a máquina de escrever, que caíam debaixo do
+> texto. Posição de assunto é problema de layout, não de redação de prompt.
+> Resolvido no render, funciona com qualquer imagem que chegar, inclusive as
+> que já estavam geradas.
 
 ## O bloco técnico
 
@@ -66,20 +75,19 @@ Cole no fim de todo prompt:
 Vertical 4:5 composition. Photorealistic editorial photograph, full-frame
 camera, natural film grain.
 
-CRITICAL FRAMING: the main subject must sit entirely within the TOP HALF of
-the frame. The bottom 45% of the image must be empty — plain background,
-shadow, floor or out-of-focus surface — with no subject, no face, no product
-and no important detail, because large text will be placed over it. Compose
-with generous empty space below the subject.
+FRAMING: centre the main subject in the frame, at a comfortable distance —
+not a tight crop. Leave breathing room at the top and bottom edges: the top
+15% and the bottom 15% of the image are trimmed in layout, so no face, no
+product and no essential detail may touch either edge.
 
 No text, letters, numbers, logos or watermarks anywhere in the image. No real
 or recognizable public figures.
 ```
 
-*(4:5 vertical, fotografia editorial realista. O assunto inteiro na metade de
-cima; os 45% de baixo vazios — fundo, sombra, chão ou superfície desfocada —
-porque é ali que o texto grande entra. Nenhum texto, letra, número, logo ou
-marca d'água. Nenhuma pessoa real ou reconhecível.)*
+*(4:5 vertical, fotografia editorial realista. Assunto centralizado, sem corte
+apertado. Folga nas bordas: os 15% de cima e os 15% de baixo são descartados no
+layout, então nada essencial pode encostar neles. Nenhum texto, letra, número,
+logo ou marca d'água. Nenhuma pessoa real ou reconhecível.)*
 
 O texto exato dos prompts vive em `scripts/prompts-capas.mjs`, e é de lá que o
 script lê. Os trechos abaixo servem para você entender cada escolha.
