@@ -82,9 +82,33 @@ ESTE TEMPLATE MOSTRA CADA CARD COMO UMA CAIXA DE CONVERSA DE IA
 - O "titulo" continua sendo a promessa daquele prompt, não o prompt em si.
 - O selo dos cards do meio é sempre "PROMPT".`;
 
+// Nestes layouts quem carrega o card é a foto do usuário. Sem esta regra a IA
+// escreve o título de sempre — três linhas gigantes — e ele cobre justamente a
+// imagem que a pessoa subiu pra mostrar.
+const REGRAS_FOTO = `
+ESTE TEMPLATE MOSTRA A FOTO DO USUÁRIO EM PRIMEIRO PLANO
+- O "titulo" é uma LEGENDA, não uma manchete: no máximo 6 palavras. Nomeie o que está na foto ("Cozinha planejada, 12 m²", "Terceira sessão"), não uma promessa.
+- O "texto" é uma linha só, no máximo 12 palavras, com o detalhe que a foto não conta sozinha: material, prazo, técnica, medida. Pode vir vazio.
+- Nada de gancho, pergunta retórica ou "arrasta pra o lado" no meio do carrossel.
+- Quem convence aqui é a imagem. Seu texto legenda, não vende.`;
+
+const REGRAS_ANTES_DEPOIS = `
+CADA CARD MOSTRA DUAS FOTOS DO USUÁRIO, UMA DE ANTES E UMA DE DEPOIS
+- O "titulo" tem no máximo 6 palavras e descreve a transformação daquele caso, não o serviço em geral.
+- O "texto" é uma linha só, até 14 palavras, com o dado concreto: quantas sessões, quanto tempo, o que foi feito.
+- NUNCA prometa resultado garantido nem generalize um caso ("todo mundo consegue"). Descreva o caso que está na foto.
+- Nada de número inventado. Se você não tem o dado, escreva de forma qualitativa.`;
+
+function regrasDoLayout(layout) {
+  if (layout === "chat") return REGRAS_PROMPT;
+  if (layout === "foto") return REGRAS_FOTO;
+  if (layout === "antes-depois") return REGRAS_ANTES_DEPOIS;
+  return "";
+}
+
 function sistema(template, slides) {
   return `Você escreve carrosséis de Instagram em português do Brasil que prendem a atenção até o último card.
-${template.layout === "chat" ? REGRAS_PROMPT : ""}
+${regrasDoLayout(template.layout)}
 
 TEMPLATE ESCOLHIDO: "${template.nome}" — ${template.descricao}
 SELOS QUE COMBINAM COM ESSE TEMPLATE: ${template.selos.join(", ")}

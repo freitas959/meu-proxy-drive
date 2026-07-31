@@ -177,6 +177,7 @@ export default function PreviaFeed({
             indice={indice}
             total={total}
             imagem={imagens[indice] || null}
+            imagemB={imagens[`${indice}b`] || null}
             handle={handle}
             perfil={perfilPost}
             ehCapa={indice === 0}

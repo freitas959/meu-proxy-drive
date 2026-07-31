@@ -404,6 +404,14 @@
   color: #c0392b;
 }
 
+/* Segundo quadradinho do par "antes e depois". A margem negativa cola os dois,
+   e a folga maior à direita separa um par do próximo — sem isso a fileira vira
+   uma sequência de quadradinhos soltos e ninguém entende quais andam juntos. */
+.quadradinhoPar {
+  margin-left: -6px;
+  margin-right: 10px;
+}
+
 .quadradinhoRemover {
   position: absolute;
   top: 3px;

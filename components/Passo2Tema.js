@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import CardCanvas from "./CardCanvas";
 import { CUSTOS } from "@/lib/custos";
 import { prepararFoto, lerComoDataURL } from "@/lib/foto";
+import { precisaDeDuasFotos } from "@/lib/templates";
 import s from "@/app/app/wizard.module.css";
 
 const MIN_SLIDES = 3;
@@ -31,8 +32,9 @@ export default function Passo2Tema({
   const inputCapa = useRef(null);
   const inputCard = useRef(null);
   const inputRefs = useRef(null);
-  const alvoCard = useRef(0);
+  const alvoCard = useRef("0");
 
+  const duasFotos = precisaDeDuasFotos(template);
   const custoRoteiro = CUSTOS.roteiro + (dados.capaModo === "ia" ? CUSTOS.capaIA : 0);
   const podeGerar = Boolean(dados.tema.trim() || dados.link.trim());
   const podeImportar = dados.tema.trim().length >= 40;
@@ -43,7 +45,8 @@ export default function Passo2Tema({
     // Descarta as fotos dos cards que deixaram de existir.
     const imagens = { ...dados.imagens };
     for (const chave of Object.keys(imagens)) {
-      if (Number(chave) >= novo) delete imagens[chave];
+      // A chave pode ser "3" ou "3b"; o que importa é o número na frente.
+      if (parseInt(chave, 10) >= novo) delete imagens[chave];
     }
     atualizar({ slides: novo, imagens });
   }
@@ -201,62 +204,81 @@ export default function Passo2Tema({
         <span className={`mono-label ${s.rotulo}`}>
           Imagens dos cards{" "}
           <span className={s.rotuloLeve}>
-            (opcional), clique num quadradinho pra subir a foto daquele card
+            {duasFotos
+              ? "(obrigatório) cada card tem duas: a de antes e a de depois"
+              : "(opcional), clique num quadradinho pra subir a foto daquele card"}
           </span>
         </span>
         <div className={s.quadradinhos}>
-          {Array.from({ length: dados.slides }, (_, i) => {
-            const foto = dados.imagens[i];
-            const ehCapaIA = i === 0 && dados.capaModo === "ia";
-            return (
-              <button
-                key={i}
-                type="button"
-                className={`${s.quadradinho} ${ehCapaIA ? s.quadradinhoCapa : ""}`}
-                onClick={() => {
-                  if (i === 0) {
-                    inputCapa.current?.click();
-                  } else {
-                    alvoCard.current = i;
-                    inputCard.current?.click();
+          {Array.from({ length: dados.slides }, (_, i) =>
+            // Num template de antes e depois cada card vira um par de
+            // quadradinhos; nos demais, um só.
+            (duasFotos ? ["", "b"] : [""]).map((sufixo) => {
+              const chave = `${i}${sufixo}`;
+              const foto = dados.imagens[chave];
+              const ehCapaIA = chave === "0" && dados.capaModo === "ia";
+              const rotulo = duasFotos
+                ? `${i + 1}${sufixo === "b" ? "D" : "A"}`
+                : `${i + 1}`;
+              return (
+                <button
+                  key={chave}
+                  type="button"
+                  className={`${s.quadradinho} ${ehCapaIA ? s.quadradinhoCapa : ""} ${
+                    sufixo === "b" ? s.quadradinhoPar : ""
+                  }`}
+                  onClick={() => {
+                    if (chave === "0") {
+                      inputCapa.current?.click();
+                    } else {
+                      alvoCard.current = chave;
+                      inputCard.current?.click();
+                    }
+                  }}
+                  title={
+                    duasFotos
+                      ? `Card ${i + 1} — foto ${sufixo === "b" ? "de depois" : "de antes"}`
+                      : i === 0
+                        ? "Capa do carrossel"
+                        : `Foto do card ${i + 1}`
                   }
-                }}
-                title={i === 0 ? "Capa do carrossel" : `Foto do card ${i + 1}`}
-              >
-                <span className={s.quadradinhoNum}>{i + 1}</span>
-                {foto ? (
-                  <>
-                    {/* data URL local: next/image não tem o que otimizar aqui */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img className={s.quadradinhoFoto} src={foto} alt="" />
-                    <span
-                      className={s.quadradinhoRemover}
-                      role="button"
-                      tabIndex={-1}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const imagens = { ...dados.imagens };
-                        delete imagens[i];
-                        atualizar(i === 0 ? { imagens, capaModo: "ia" } : { imagens });
-                      }}
-                      aria-label="Remover foto"
-                    >
-                      ×
-                    </span>
-                  </>
-                ) : ehCapaIA ? (
-                  <>✨ IA CAPA</>
-                ) : (
-                  "+"
-                )}
-              </button>
-            );
-          })}
+                >
+                  <span className={s.quadradinhoNum}>{rotulo}</span>
+                  {foto ? (
+                    <>
+                      {/* data URL local: next/image não tem o que otimizar aqui */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img className={s.quadradinhoFoto} src={foto} alt="" />
+                      <span
+                        className={s.quadradinhoRemover}
+                        role="button"
+                        tabIndex={-1}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const imagens = { ...dados.imagens };
+                          delete imagens[chave];
+                          atualizar(
+                            chave === "0" && !duasFotos
+                              ? { imagens, capaModo: "ia" }
+                              : { imagens }
+                          );
+                        }}
+                        aria-label="Remover foto"
+                      >
+                        ×
+                      </span>
+                    </>
+                  ) : ehCapaIA ? (
+                    <>✨ IA CAPA</>
+                  ) : (
+                    "+"
+                  )}
+                </button>
+              );
+            })
+          )}
         </div>
 
-        {/* Junto dos quadradinhos de propósito. Antes esta mensagem ficava
-            150 linhas abaixo, depois da seção de referências: a foto era
-            recusada e a pessoa via só o quadradinho continuar vazio. */}
         {avisoFoto && <p className={s.avisoFoto}>{avisoFoto}</p>}
         <p className="hint" style={{ marginTop: 10 }}>
           A <strong>capa</strong> pode ser gerada por IA ou foto sua. Os demais cards aceitam{" "}

@@ -45,6 +45,7 @@ export default function Passo4Imagens({
       indice,
       total,
       imagem: imagens[indice] || null,
+      imagemB: imagens[`${indice}b`] || null,
       handle,
       perfil,
       ehCapa: indice === 0,
@@ -206,6 +207,7 @@ export default function Passo4Imagens({
                   indice={i}
                   total={total}
                   imagem={imagens[i] || null}
+                  imagemB={imagens[`${i}b`] || null}
                   handle={handle}
                   perfil={perfil}
                   ehCapa={i === 0}
