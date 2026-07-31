@@ -1,4 +1,4 @@
-import { getCliente, semChave, extrairFerramenta } from "@/lib/anthropic";
+import { getCliente, semChave, extrairFerramenta, comoLista } from "@/lib/anthropic";
 import { acharTemplateServidor } from "@/lib/catalogoServidor";
 import { erroAnthropic } from "@/lib/erros";
 import { cobrar, devolver, exigirUsuario } from "@/lib/creditos";
@@ -88,12 +88,13 @@ O texto é do usuário: preserve as palavras e as ideias dele. Você pode cortar
     });
 
     const dados = extrairFerramenta(resposta, "entregar_roteiro");
-    if (!dados?.slides?.length) {
+    const slides = comoLista(dados?.slides);
+    if (!slides?.length) {
       await devolver(cobranca.usuarioId, CUSTOS.importar, "estorno: importação vazia");
       return Response.json({ erro: "Não consegui organizar esse texto." }, { status: 502 });
     }
 
-    dados.slides = dados.slides.slice(0, total);
+    dados.slides = slides.slice(0, total);
     if (!dados.promptCapa) dados.promptCapa = template?.cenaCapa || "";
 
     return Response.json({ ...dados, saldo: cobranca.saldo });

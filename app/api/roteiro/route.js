@@ -1,4 +1,4 @@
-import { getCliente, semChave, MODELO, extrairFerramenta } from "@/lib/anthropic";
+import { getCliente, semChave, MODELO, extrairFerramenta, comoLista } from "@/lib/anthropic";
 import { acharTemplateServidor } from "@/lib/catalogoServidor";
 import { erroAnthropic } from "@/lib/erros";
 import { cobrar, devolver, exigirUsuario } from "@/lib/creditos";
@@ -191,13 +191,14 @@ export async function POST(req) {
     });
 
     const dados = extrairFerramenta(resposta, "entregar_roteiro");
-    if (!dados?.slides?.length) {
+    const slides = comoLista(dados?.slides);
+    if (!slides?.length) {
       await devolver(cobranca.usuarioId, CUSTOS.roteiro, "estorno: roteiro vazio");
       return Response.json({ erro: "A IA não devolveu um roteiro válido." }, { status: 502 });
     }
 
     // O modelo às vezes entrega um card a mais ou a menos; corta no tamanho pedido.
-    dados.slides = dados.slides.slice(0, total);
+    dados.slides = slides.slice(0, total);
     if (!dados.promptCapa) dados.promptCapa = template.cenaCapa || "";
 
     // O saldo volta junto: o cabeçalho atualiza sem precisar de outra chamada.

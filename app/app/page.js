@@ -165,6 +165,14 @@ export default function AppCarrossel() {
   }
 
   function aplicarRoteiro(resultado) {
+    // O servidor já normaliza a lista, mas se um dia escapar algo fora do
+    // formato o usuário merece uma frase legível em vez de "slides.map is not
+    // a function" — que foi exatamente o que apareceu na tela quando o modelo
+    // devolveu os cards serializados como texto.
+    if (!Array.isArray(resultado?.slides) || !resultado.slides.length) {
+      throw new Error("A IA devolveu o roteiro num formato inesperado. Tente gerar de novo.");
+    }
+
     const promptCapa = dados.capaPrompt.trim() || resultado.promptCapa || template.cenaCapa || "";
     setRoteiro(
       resultado.slides.map((slide, i) => ({
