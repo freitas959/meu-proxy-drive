@@ -398,6 +398,12 @@
   object-fit: cover;
 }
 
+.avisoFoto {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #c0392b;
+}
+
 .quadradinhoRemover {
   position: absolute;
   top: 3px;

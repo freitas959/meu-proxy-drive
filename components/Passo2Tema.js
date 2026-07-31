@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import CardCanvas from "./CardCanvas";
 import { CUSTOS } from "@/lib/custos";
+import { prepararFoto, lerComoDataURL } from "@/lib/foto";
 import s from "@/app/app/wizard.module.css";
 
 const MIN_SLIDES = 3;
@@ -13,15 +14,6 @@ const ESTILOS_CAPA = [
   { id: "foto", nome: "Foto realista", nota: "cena fotográfica, como no feed" },
   { id: "ilustracao", nome: "Ilustração", nota: "desenho vetorial na sua paleta" },
 ];
-
-function lerComoDataURL(arquivo) {
-  return new Promise((resolve, reject) => {
-    const leitor = new FileReader();
-    leitor.onload = () => resolve(leitor.result);
-    leitor.onerror = () => reject(new Error("Não consegui ler o arquivo."));
-    leitor.readAsDataURL(arquivo);
-  });
-}
 
 export default function Passo2Tema({
   template,
@@ -35,6 +27,7 @@ export default function Passo2Tema({
   carregando,
 }) {
   const [avisoAnexo, setAvisoAnexo] = useState("");
+  const [avisoFoto, setAvisoFoto] = useState("");
   const inputCapa = useRef(null);
   const inputCard = useRef(null);
   const inputRefs = useRef(null);
@@ -59,29 +52,26 @@ export default function Passo2Tema({
     const arquivo = evento.target.files?.[0];
     evento.target.value = "";
     if (!arquivo) return;
-    if (arquivo.size > TAMANHO_MAX_ANEXO) {
-      setAvisoAnexo("Imagem acima de 4 MB. Reduza antes de subir.");
-      return;
+    setAvisoFoto("");
+    try {
+      const foto = await prepararFoto(arquivo);
+      atualizar({ imagens: { ...dados.imagens, [alvoCard.current]: foto } });
+    } catch (falha) {
+      setAvisoFoto(falha.message);
     }
-    setAvisoAnexo("");
-    atualizar({
-      imagens: { ...dados.imagens, [alvoCard.current]: await lerComoDataURL(arquivo) },
-    });
   }
 
   async function receberCapa(evento) {
     const arquivo = evento.target.files?.[0];
     evento.target.value = "";
     if (!arquivo) return;
-    if (arquivo.size > TAMANHO_MAX_ANEXO) {
-      setAvisoAnexo("Imagem acima de 4 MB. Reduza antes de subir.");
-      return;
+    setAvisoFoto("");
+    try {
+      const foto = await prepararFoto(arquivo);
+      atualizar({ capaModo: "upload", imagens: { ...dados.imagens, 0: foto } });
+    } catch (falha) {
+      setAvisoFoto(falha.message);
     }
-    setAvisoAnexo("");
-    atualizar({
-      capaModo: "upload",
-      imagens: { ...dados.imagens, 0: await lerComoDataURL(arquivo) },
-    });
   }
 
   async function adicionarReferencias(arquivos) {
@@ -263,6 +253,11 @@ export default function Passo2Tema({
             );
           })}
         </div>
+
+        {/* Junto dos quadradinhos de propósito. Antes esta mensagem ficava
+            150 linhas abaixo, depois da seção de referências: a foto era
+            recusada e a pessoa via só o quadradinho continuar vazio. */}
+        {avisoFoto && <p className={s.avisoFoto}>{avisoFoto}</p>}
         <p className="hint" style={{ marginTop: 10 }}>
           A <strong>capa</strong> pode ser gerada por IA ou foto sua. Os demais cards aceitam{" "}
           <strong>upload</strong>: a foto entra pronta no carrossel final (e dá pra ajustar
