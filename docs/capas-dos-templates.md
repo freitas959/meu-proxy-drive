@@ -24,7 +24,18 @@ npm run capas -- pizzaria --forcar         # refazer um que já tem
 
 Os arquivos caem em `public/templates/` como `pizzaria-1.png`, `pizzaria-2.png`
 e assim por diante. **Escolha a melhor de cada e renomeie para `pizzaria.png`**,
-sem o número — é esse nome que o template procura. As descartadas você apaga.
+sem o número. As descartadas você apaga.
+
+Depois de renomear, rode:
+
+```powershell
+npm run capas:mapear
+```
+
+Ele varre a pasta e escreve `lib/capas.js`, que é como o app descobre quais
+capas existem. Sem isso a imagem fica lá parada e o card continua com o fundo
+abstrato. Só entra arquivo cujo nome seja exatamente o id de um template — as
+numeradas ficam de fora, de propósito.
 
 Cada imagem é uma chamada paga na sua conta do Google. O script diz quantas vai
 gerar antes de começar, e espera dois segundos entre uma e outra para não

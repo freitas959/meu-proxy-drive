@@ -16,3 +16,8 @@ yarn-error.log*
 .vercel
 next-env.d.ts
 *.tsbuildinfo
+
+# Variações de capa geradas pelo script — só a escolhida (sem número) entra no git.
+public/templates/*-[0-9].png
+public/templates/*-[0-9].jpg
+public/templates/*-[0-9].webp
