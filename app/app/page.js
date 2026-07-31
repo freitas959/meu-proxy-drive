@@ -262,26 +262,39 @@ export default function AppCarrossel() {
     window.scrollTo({ top: 0 });
   }
 
-  // Guarda o projeto ao chegar no resultado. As imagens ficam de fora de
-  // propósito: data URLs estouram a cota do localStorage num carrossel só.
+  // Guarda o projeto ao chegar no resultado.
+  //
+  // O atraso não é enfeite: este efeito dispara a cada mexida em paleta, fonte
+  // e tamanho, e agora cada gravação é uma ida ao banco. Sem ele, arrastar um
+  // seletor de cor vira uma requisição por quadro.
   useEffect(() => {
     if (passo !== 4 || !template || !roteiro.length) return;
-    salvarProjeto({
-      id: projetoId.current,
-      titulo: roteiro[0]?.titulo || dados.tema.slice(0, 60) || "Carrossel sem título",
-      templateId: template.id,
-      paleta,
-      fontes,
-      tamanho,
-      handle,
-      perfil,
-      roteiro,
-      legenda,
-      capaEstilo: dados.capaEstilo,
-    });
-    // As imagens vão pro IndexedDB: em data URL elas estouram a cota do
-    // localStorage, e sem elas o "Abrir" perderia a capa já gerada.
-    salvarImagens(projetoId.current, dados.imagens);
+
+    const id = setTimeout(() => {
+      salvarProjeto({
+        id: projetoId.current,
+        titulo: roteiro[0]?.titulo || dados.tema.slice(0, 60) || "Carrossel sem título",
+        templateId: template.id,
+        paleta,
+        fontes,
+        tamanho,
+        handle,
+        perfil,
+        roteiro,
+        legenda,
+        capaEstilo: dados.capaEstilo,
+      }).catch((falha) => {
+        // Falhar em salvar não pode tirar da tela o carrossel que já ficou
+        // pronto — o download continua funcionando.
+        setErro(falha?.message || "Não consegui salvar este projeto na sua conta.");
+      });
+
+      // As imagens seguem no IndexedDB: em data URL uma capa passa de 1 MB, e
+      // subir isso a cada autosave seria caro e lento.
+      salvarImagens(projetoId.current, dados.imagens);
+    }, 900);
+
+    return () => clearTimeout(id);
   }, [passo, template, roteiro, paleta, fontes, tamanho, handle, perfil, legenda, dados.tema, dados.imagens, dados.capaEstilo]);
 
   return (

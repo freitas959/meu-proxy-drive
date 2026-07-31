@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import CardCanvas from "./CardCanvas";
-import { getProjetos, removerProjeto, salvarProjeto } from "@/lib/store";
+import { listarProjetos, removerProjeto, salvarProjeto, migrarDoNavegador } from "@/lib/store";
 import { carregarImagens, apagarImagens } from "@/lib/imagens";
 import { acharTemplate } from "@/lib/catalogo";
 import s from "./projetos.module.css";
@@ -176,23 +176,55 @@ function Cartao({ projeto, onAbrir, onRenomear, onApagar }) {
 
 export default function ModalProjetos({ onFechar, onAbrir }) {
   const [projetos, setProjetos] = useState(null);
+  const [erro, setErro] = useState("");
 
   useEffect(() => {
-    setProjetos(getProjetos());
+    let vivo = true;
+
+    (async () => {
+      try {
+        // A migração vem antes da listagem: quem tinha projetos só no navegador
+        // precisa vê-los já nesta abertura, não na próxima.
+        await migrarDoNavegador();
+        const lista = await listarProjetos();
+        if (vivo) setProjetos(lista);
+      } catch (falha) {
+        if (!vivo) return;
+        setErro(falha?.message || "Não consegui carregar seus projetos.");
+        setProjetos([]);
+      }
+    })();
+
     const aoTeclar = (e) => e.key === "Escape" && onFechar();
     window.addEventListener("keydown", aoTeclar);
-    return () => window.removeEventListener("keydown", aoTeclar);
+    return () => {
+      vivo = false;
+      window.removeEventListener("keydown", aoTeclar);
+    };
   }, [onFechar]);
 
-  function renomear(projeto, titulo) {
-    salvarProjeto({ ...projeto, titulo });
-    setProjetos(getProjetos());
+  async function renomear(projeto, titulo) {
+    // Otimista: o nome troca na hora e volta atrás se o banco recusar.
+    const antes = projetos;
+    setProjetos((lista) => lista.map((p) => (p.id === projeto.id ? { ...p, titulo } : p)));
+    try {
+      await salvarProjeto({ ...projeto, titulo });
+    } catch (falha) {
+      setProjetos(antes);
+      setErro(falha?.message || "Não consegui renomear.");
+    }
   }
 
   async function apagar(projeto) {
-    removerProjeto(projeto.id);
-    await apagarImagens(projeto.id);
-    setProjetos(getProjetos());
+    const antes = projetos;
+    setProjetos((lista) => lista.filter((p) => p.id !== projeto.id));
+    try {
+      await removerProjeto(projeto.id);
+      await apagarImagens(projeto.id);
+    } catch (falha) {
+      setProjetos(antes);
+      setErro(falha?.message || "Não consegui apagar.");
+    }
   }
 
   async function abrir(projeto) {
@@ -216,9 +248,12 @@ export default function ModalProjetos({ onFechar, onAbrir }) {
 
         <h2 className={s.titulo}>Meus projetos</h2>
         <p className={s.subtitulo}>
-          Abra um projeto pra baixar as imagens de novo, renomeie pra achar depois, ou
+          Ficam salvos na sua conta, então aparecem em qualquer computador onde você
+          entrar. Abra pra baixar as imagens de novo, renomeie pra achar depois, ou
           apague o que não serve mais.
         </p>
+
+        {erro && <div className={s.vazio}>{erro}</div>}
 
         {projetos === null && <div className={s.vazio}>Carregando…</div>}
 
