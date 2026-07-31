@@ -252,6 +252,19 @@ export default function Passo3Roteiro({
                 </div>
               </div>
             </div>
+
+            {/* Antes o selo era desenhado sempre, sem escolha: todo mundo saía
+                com um verificado que não tem. Agora é opção, e começa
+                desligado. */}
+            <label className={s.checkLinha}>
+              <input
+                type="checkbox"
+                checked={Boolean(perfil?.verificado)}
+                onChange={(e) => setPerfil({ ...perfil, verificado: e.target.checked })}
+              />
+              Mostrar selo de verificado ao lado do nome
+            </label>
+
             {erroFoto && <p className={s.erroFoto}>{erroFoto}</p>}
           </>
         )}
