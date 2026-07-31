@@ -9,6 +9,30 @@ Uma imagem por template, para aparecer atrás do primeiro card na vitrine.
 > de banco de imagem. Refeito com pessoa onde o nicho é sobre gente, objeto onde
 > é sobre coisa, e direção fotográfica de verdade em cada um.
 
+## O jeito rápido: gerar em lote pela API
+
+Não precisa colar prompt no AI Studio uma por uma. A chave do Gemini que já
+está no `.env.local` serve, e o script faz todas:
+
+```powershell
+npm run capas -- pizzaria                  # um template, 3 variações
+npm run capas -- pizzaria hamburgueria     # vários
+npm run capas -- --todas                   # todos que ainda não têm capa
+npm run capas -- --todas --variacoes 4
+npm run capas -- pizzaria --forcar         # refazer um que já tem
+```
+
+Os arquivos caem em `public/templates/` como `pizzaria-1.png`, `pizzaria-2.png`
+e assim por diante. **Escolha a melhor de cada e renomeie para `pizzaria.png`**,
+sem o número — é esse nome que o template procura. As descartadas você apaga.
+
+Cada imagem é uma chamada paga na sua conta do Google. O script diz quantas vai
+gerar antes de começar, e espera dois segundos entre uma e outra para não
+esbarrar no limite por minuto.
+
+O texto exato de cada prompt vive em `scripts/prompts-capas.mjs`. Este
+documento é a versão para ler, com a explicação de cada escolha.
+
 ## As três regras que o renderizador impõe
 
 O título é desenhado **por cima** da imagem, ancorado embaixo, com um degradê
