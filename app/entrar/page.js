@@ -2,56 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { getSupabase } from "@/lib/supabase/navegador";
+import { traduzir, Marca, IconeOlho } from "@/components/auth";
 import s from "./entrar.module.css";
-
-// O Supabase responde em inglês. Traduzir aqui evita jogar "Invalid login
-// credentials" na cara de quem só errou a senha.
-const TRADUCOES = [
-  [/invalid login credentials/i, "E-mail ou senha incorretos."],
-  [/email not confirmed/i, "Confirme seu e-mail antes de entrar. Veja sua caixa de entrada."],
-  [/user already registered/i, "Esse e-mail já tem conta. Tente entrar."],
-  [/password should be at least/i, "A senha precisa de pelo menos 6 caracteres."],
-  [/unable to validate email/i, "Esse e-mail não parece válido."],
-  [/rate limit|too many/i, "Muitas tentativas seguidas. Espere um minuto."],
-  [/signups not allowed/i, "Os cadastros estão fechados no momento."],
-];
-
-function traduzir(mensagem = "") {
-  for (const [padrao, texto] of TRADUCOES) {
-    if (padrao.test(mensagem)) return texto;
-  }
-  return mensagem || "Não consegui completar essa ação.";
-}
-
-function IconeOlho({ aberto }) {
-  return (
-    <svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <path
-        d="M1.7 10S4.6 4.8 10 4.8 18.3 10 18.3 10 15.4 15.2 10 15.2 1.7 10 1.7 10z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-      <circle cx="10" cy="10" r="2.6" stroke="currentColor" strokeWidth="1.6" />
-      {/* A barra cortando é o estado "escondida": some quando a senha aparece. */}
-      {!aberto && (
-        <path d="M3.5 3.5l13 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      )}
-    </svg>
-  );
-}
-
-function Marca() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true">
-      <rect width="28" height="28" rx="7" fill="var(--orange)" />
-      <rect x="7" y="6" width="9" height="16" rx="1.5" fill="#fff" />
-      <rect x="17" y="8" width="4.5" height="12" rx="1.5" fill="#fff" opacity="0.55" />
-      <path d="M9.5 6h4.5v7l-2.25-1.7L9.5 13V6z" fill="var(--orange)" />
-    </svg>
-  );
-}
 
 export default function Entrar() {
   const router = useRouter();
@@ -174,6 +128,15 @@ export default function Entrar() {
             {ocupado ? "Um instante…" : cadastro ? "Criar conta" : "Entrar"}
           </button>
         </form>
+
+        {/* Só no modo entrar: no cadastro não existe senha pra recuperar. */}
+        {!cadastro && (
+          <p className={s.troca}>
+            <Link className={s.trocaBtn} href="/esqueci-senha">
+              Esqueci minha senha
+            </Link>
+          </p>
+        )}
 
         {erro && <p className={`${s.aviso} ${s.avisoErro}`}>{erro}</p>}
         {aviso && <p className={`${s.aviso} ${s.avisoOk}`}>{aviso}</p>}
