@@ -189,6 +189,15 @@ in their clothes, mountains meeting the sea ahead. Backlit by the low sun, soft
 lens flare. 35mm. Orange and teal grade, foreground rocks in deep shadow.
 ```
 
+### pizzaria — Pizzaria
+```
+A pizzaiolo pulling a pizza out of a wood-fired oven on a long metal peel,
+flames visible inside the oven mouth, flour dust and sparks suspended in the
+air, face lit from below by the fire. 35mm, slight motion blur on the peel.
+Amber and deep black grade, everything below the oven in shadow.
+```
+*O fogo faz a luz e ainda escurece embaixo sozinho.*
+
 ### pets — Pets
 ```
 A golden retriever sitting and looking up attentively at a hand just outside
@@ -207,6 +216,22 @@ raking across brushed metal, fine dust suspended in the beam. 100mm macro,
 extreme shallow focus on one component, everything else swallowed by black.
 ```
 *Troquei a placa de circuito: é a imagem mais batida que existe pra IA.*
+
+### hamburgueria — Hamburgueria
+```
+Extreme close-up of a handmade burger on a dark wooden board, melted cheese
+spilling over the edge, steam rising, sesame bun with a soft sheen. Hard warm
+light from camera left, deep shadow on the right. 100mm macro, very shallow
+depth of field. Ember orange and burnt brown grade, kitchen behind in darkness.
+```
+
+### restaurante — Restaurante
+```
+A carefully plated dish on a dark restaurant table at night, lit by a single
+warm pendant lamp from above, cutlery and a wine glass slightly out of focus
+beside it. 50mm f/2, shallow depth of field. Copper and near-black grade, the
+tablecloth falling into shadow toward the bottom of the frame.
+```
 
 ### contabilidade-financeiro — Contabilidade e Financeiro
 ```
