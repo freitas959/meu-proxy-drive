@@ -50,8 +50,10 @@ O título é desenhado **por cima** da imagem, ancorado embaixo, com um degradê
 que escurece a base. Daí:
 
 1. **4:5 vertical.** É o formato do card.
-2. **Assunto no terço superior**, sombra caindo no terço inferior. Não é
-   "escureça embaixo" — é compor de modo que embaixo não tenha nada importante.
+2. **Assunto inteiro na METADE DE CIMA**, metade de baixo vazia. Não é o terço
+   superior: o título começa por volta de **65% da altura**, então pedir o
+   terço superior deixa uma faixa inteira de sobreposição — foi assim que o
+   prato do restaurante e o rosto da clínica foram parar debaixo do texto.
 3. **Nenhuma palavra na imagem.** E, mais importante que pedir isso: **não
    coloque papel, tela ou placa como protagonista**. Se o objeto pede texto, o
    modelo escreve.
@@ -62,16 +64,25 @@ Cole no fim de todo prompt:
 
 ```
 Vertical 4:5 composition. Photorealistic editorial photograph, full-frame
-camera, natural film grain. Place the subject in the upper two thirds; the
-bottom third must fall into deep shadow with no important detail. No text,
-letters, numbers, logos or watermarks anywhere in the image. No real or
-recognizable public figures.
+camera, natural film grain.
+
+CRITICAL FRAMING: the main subject must sit entirely within the TOP HALF of
+the frame. The bottom 45% of the image must be empty — plain background,
+shadow, floor or out-of-focus surface — with no subject, no face, no product
+and no important detail, because large text will be placed over it. Compose
+with generous empty space below the subject.
+
+No text, letters, numbers, logos or watermarks anywhere in the image. No real
+or recognizable public figures.
 ```
 
-*(4:5 vertical. Fotografia editorial realista, câmera full-frame, grão natural.
-Assunto no terço superior; o terço inferior cai em sombra profunda, sem nada
-importante. Nenhum texto, letra, número, logo ou marca d'água. Nenhuma pessoa
-real ou reconhecível.)*
+*(4:5 vertical, fotografia editorial realista. O assunto inteiro na metade de
+cima; os 45% de baixo vazios — fundo, sombra, chão ou superfície desfocada —
+porque é ali que o texto grande entra. Nenhum texto, letra, número, logo ou
+marca d'água. Nenhuma pessoa real ou reconhecível.)*
+
+O texto exato dos prompts vive em `scripts/prompts-capas.mjs`, e é de lá que o
+script lê. Os trechos abaixo servem para você entender cada escolha.
 
 ## Como usar
 
