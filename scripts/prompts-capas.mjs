@@ -62,7 +62,7 @@ const COM_TEXTO = new Set(["educacao-professores"]);
 export const PROMPTS = {
   insider: `A woman in her thirties sitting alone in a bare concrete studio, leaning back in a wooden chair, eyes closed, exhausted but composed. Loose sheets of paper suspended in mid-air around her, frozen in motion, concentrated in the upper half of the frame. Hard directional light from a single tall window on camera left, deep black shadows on the right. 35mm lens, slight motion blur on the papers. Desaturated grey and black grade.`,
 
-  "inteligencia-artificial": `A dark workshop bench with a partially disassembled machine, amber work light raking across brushed metal, fine dust suspended in the beam. 100mm macro, extreme shallow focus on one component, everything else swallowed by black.`,
+  "inteligencia-artificial": `Extreme close-up of a modern processor chip seated on a dark unmarked circuit board, its square brushed-metal heat spreader centred in the frame. A hard amber light rakes in from camera left, glinting off rows of copper contacts and the fine tracks around the socket, everything beyond falling into total black. Faint dust suspended in the beam. 100mm macro, shallow focus on the near edge of the chip. Amber and near-black grade.`,
 
   advocacia: `A man in his fifties wearing a dark tailored suit, standing in a classic law library, one hand resting on a bookshelf, looking off camera with quiet authority. Warm tungsten lamp glow behind him creating a rim light along his shoulder. 85mm f/1.8, shallow depth of field, bookshelves dissolving into bokeh. Deep amber and near-black grade.`,
 
