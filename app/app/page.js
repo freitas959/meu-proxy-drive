@@ -191,7 +191,10 @@ export default function AppCarrossel() {
 
   /** Passo 3 → 4: entra no resultado e, se pedido, desenha a capa em paralelo. */
   async function gerarImagens() {
-    const usaCapaIA = capaIA && dados.capaModo === "ia";
+    // `template.capaIA` entra na conta junto com o estado: o estado é um
+    // interruptor que o usuário mexe no passo 3, e ele já divergiu do template
+    // uma vez — um portfólio chegou a gerar capa por IA.
+    const usaCapaIA = Boolean(template?.capaIA) && capaIA && dados.capaModo === "ia";
 
     setErroCapa("");
     avancar(4);
@@ -340,6 +343,7 @@ export default function AppCarrossel() {
             setCapaIA={setCapaIA}
             capaEstilo={dados.capaEstilo}
             temUploadCapa={dados.capaModo === "upload"}
+            podeCapaIA={Boolean(template?.capaIA)}
             onVoltar={() => setPasso(2)}
             onGerar={gerarImagens}
             carregando={carregando}

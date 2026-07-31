@@ -257,8 +257,12 @@ export default function Passo2Tema({
                           e.stopPropagation();
                           const imagens = { ...dados.imagens };
                           delete imagens[chave];
+                          // Tirar a foto da capa só volta pro modo IA em
+                          // template que tem capa por IA. Sem esta condição, um
+                          // portfólio passava a oferecer capa gerada — e a IA
+                          // inventava uma foto no lugar do trabalho da pessoa.
                           atualizar(
-                            chave === "0" && !duasFotos
+                            chave === "0" && !duasFotos && template?.capaIA
                               ? { imagens, capaModo: "ia" }
                               : { imagens }
                           );

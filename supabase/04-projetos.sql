@@ -16,6 +16,15 @@
 alter table public.projetos
   add column if not exists perfil jsonb not null default '{}'::jsonb;
 
+-- O PostgREST guarda o desenho das tabelas em cache e só o relê de tempos em
+-- tempos. Sem este aviso, salvar um projeto falha com
+--
+--   Could not find the 'perfil' column of 'projetos' in the schema cache
+--
+-- mesmo com a coluna já criada — e a mensagem faz parecer que o ALTER acima
+-- não funcionou.
+notify pgrst, 'reload schema';
+
 -- ---------------------------------------------------------------- conferência
 -- Depois de rodar, isto tem que devolver as 12 colunas, com `perfil` entre elas:
 --

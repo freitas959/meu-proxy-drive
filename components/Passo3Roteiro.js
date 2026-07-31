@@ -37,6 +37,7 @@ export default function Passo3Roteiro({
   setCapaIA,
   capaEstilo,
   temUploadCapa,
+  podeCapaIA = true,
   onVoltar,
   onGerar,
   carregando,
@@ -387,7 +388,12 @@ export default function Passo3Roteiro({
                     }
                   />
 
-                  {temUploadCapa ? (
+                  {!podeCapaIA ? (
+                    <p className="hint">
+                      Neste template a capa é <strong>uma foto sua</strong>. Suba no passo
+                      anterior, no primeiro quadradinho.
+                    </p>
+                  ) : temUploadCapa ? (
                     <p className="hint">
                       A capa é a <strong>foto que você subiu</strong>. Pra usar uma ilustração
                       da IA, volte e escolha “Gerar com IA”.
