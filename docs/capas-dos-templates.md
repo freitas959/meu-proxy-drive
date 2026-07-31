@@ -289,11 +289,22 @@ grade, floor in shadow.
 
 ### inteligencia-artificial — Inteligência Artificial
 ```
-A dark workshop bench with a partially disassembled machine, amber work light
-raking across brushed metal, fine dust suspended in the beam. 100mm macro,
-extreme shallow focus on one component, everything else swallowed by black.
+Extreme close-up of a modern processor chip seated on a dark unmarked circuit
+board, its square brushed-metal heat spreader centred in the frame. A hard
+amber light rakes in from camera left, glinting off rows of
+copper contacts and the fine tracks around the socket, everything beyond
+falling into total black. Faint dust suspended in the beam. 100mm macro,
+shallow focus on the near edge of the chip. Amber and near-black grade.
 ```
-*Troquei a placa de circuito: é a imagem mais batida que existe pra IA.*
+*A versão anterior pedia "uma máquina parcialmente desmontada" — eu estava
+fugindo do clichê da placa de circuito. Fugi demais: veio uma bancada de
+torneiro, bonita e sem nenhuma relação com IA. A lição é que "não seja
+clichê" não é direção de arte; sem assunto nomeado o modelo escolhe um.*
+
+*Voltei para o processador, que é o clichê, e resolvi o clichê pela execução:
+macro fechado, luz rasante âmbar, resto no preto. E a placa vai explicitamente
+"unmarked" — placa real é coberta de serigrafia, e serigrafia legível é
+garrancho na certa.*
 
 ### hamburgueria — Hamburgueria
 ```
