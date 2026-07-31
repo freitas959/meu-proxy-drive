@@ -104,6 +104,12 @@ export const PROMPTS = {
 
   "prompt-claro": `Close-up of a pair of hands poised over a slim modern keyboard on a pale wooden desk, caught in the instant before typing, centred in the frame. Morning daylight from a window on camera left, clean airy minimal desk. 50mm f/1.8, sharp on the hands with the keys falling into soft bokeh so no character is legible. Warm cream, pale wood and soft shadow.`,
 
+  terapias: `A woman in her thirties sitting by a wide window in a quiet room, seen from the side, calm and composed, looking out. Soft diffused daylight through a sheer curtain, a plant out of focus behind her. 50mm f/2, gentle shallow focus. Muted sage green and deep forest grade, unhurried and still.`,
+
+  manicure: `Close-up of a pair of well-groomed hands resting on a pale stone surface, freshly painted nails catching the light, fingers relaxed. Large soft studio light from above, clean minimal set. 100mm macro, shallow focus on the nails. Warm cream, soft pink and pale shadow — bright, airy, high key.`,
+
+  moda: `A woman walking with purpose along an urban street, sharply tailored coat, caught mid-stride with the fabric still moving. Late afternoon backlight rimming her shoulders, the street behind falling out of focus. 85mm f/1.8, shot from a low angle. Warm sand and deep charcoal grade, no saturated colour.`,
+
   "prompt-escuro": `Close-up of a pair of hands poised over a slim modern keyboard in a dark room at night, caught in the instant before typing, centred in the frame. The only light is a cold glow spilling from a screen just out of frame, catching the knuckles and the edges of the keys. 50mm f/1.8, sharp on the hands with the keys falling into soft bokeh so no character is legible. Teal-tinted light against near-total black.`,
 };
 

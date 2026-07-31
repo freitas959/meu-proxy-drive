@@ -285,6 +285,29 @@ grade, floor in shadow.
 ```
 *A mão fora de quadro evita o defeito mais comum e ainda sugere o comando.*
 
+### terapias — Terapia e Psicologia
+```
+A woman in her thirties sitting by a wide window in a quiet room, seen from
+the side, calm and composed, looking out. Soft diffused daylight through a
+sheer curtain, a plant out of focus behind her. 50mm f/2, gentle shallow
+focus. Muted sage green and deep forest grade, unhurried and still.
+```
+*"Calma e composta", não triste. A foto de terapia erra sempre para o mesmo
+lado — cabeça baixa, mão no rosto, clima de depressão — e isso afasta em vez de
+acolher. Vista de lado e olhando para fora resolve: dá introspecção sem
+dramatizar, e não expõe um rosto em cena de vulnerabilidade.*
+
+### moda — Moda e Estilo
+```
+A woman walking with purpose along an urban street, sharply tailored coat,
+caught mid-stride with the fabric still moving. Late afternoon backlight
+rimming her shoulders, the street behind falling out of focus. 85mm f/1.8,
+shot from a low angle. Warm sand and deep charcoal grade, no saturated colour.
+```
+*Movimento é o que separa foto de moda de foto de catálogo. O contorno de
+contraluz nos ombros e o tecido ainda solto dão isso. Ângulo baixo porque é
+como toda campanha de moda é fotografada.*
+
 ## Com objeto
 
 ### inteligencia-artificial — Inteligência Artificial
@@ -321,6 +344,22 @@ warm pendant lamp from above, cutlery and a wine glass slightly out of focus
 beside it. 50mm f/2, shallow depth of field. Copper and near-black grade, the
 tablecloth falling into shadow toward the bottom of the frame.
 ```
+
+### manicure — Manicure e Nail Design
+```
+Close-up of a pair of well-groomed hands resting on a pale stone surface,
+freshly painted nails catching the light, fingers relaxed. Large soft studio
+light from above, clean minimal set. 100mm macro, shallow focus on the nails.
+Warm cream, soft pink and pale shadow — bright, airy, high key.
+```
+*A única capa clara do catálogo, porque o template também é o único editorial
+de fundo claro: o degradê fecha em creme, não em preto, e a foto termina lavada
+e arejada de propósito.*
+
+*Mão é onde todo modelo de imagem erra — dedo a mais, articulação impossível.
+Por isso as mãos estão **paradas e apoiadas**, não segurando nem gesticulando:
+mão em repouso sobre superfície plana é a pose com menos chance de defeito.
+Ainda assim, gere 4 variações desta e confira dedo por dedo.*
 
 ### contabilidade-financeiro — Contabilidade e Financeiro
 ```
@@ -369,3 +408,7 @@ tecla legível é convite para o modelo inventar caractere.*
 
 ### post-rede-social — Post / Rede Social
 O layout imita um print de post, com fundo sólido. Não usa imagem.
+
+É o **único** template sem prompt, e a ausência é de propósito: ele tem
+`capaIA: false` e `creditosCapa: 0`. Se algum dia o `capas:mapear` acusar 26 de
+27, é este que falta e está tudo certo.
