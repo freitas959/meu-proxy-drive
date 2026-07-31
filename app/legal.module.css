@@ -1,0 +1,119 @@
+/* Estilos das páginas de Termos e Privacidade. Texto corrido longo pede
+   medida de linha curta e hierarquia clara — o paginas.module.css é feito pra
+   grade de cartões, não pra leitura. */
+
+.doc {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 56px 20px 96px;
+}
+
+.voltar {
+  display: inline-block;
+  margin-bottom: 28px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--orange);
+  text-decoration: none;
+}
+
+.voltar:hover {
+  text-decoration: underline;
+}
+
+.titulo {
+  margin: 0 0 6px;
+  font-size: clamp(1.9rem, 5vw, 2.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.data {
+  margin: 0 0 40px;
+  font-size: 0.82rem;
+  opacity: 0.6;
+}
+
+.doc h2 {
+  margin: 40px 0 12px;
+  font-size: 1.18rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.doc h3 {
+  margin: 26px 0 8px;
+  font-size: 1rem;
+}
+
+.doc p,
+.doc li {
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+
+.doc p {
+  margin: 0 0 14px;
+}
+
+.doc ul {
+  margin: 0 0 16px;
+  padding-left: 22px;
+}
+
+.doc li {
+  margin-bottom: 7px;
+}
+
+.doc a {
+  color: var(--orange);
+}
+
+/* Chama atenção para o que o leitor mais procura: como exercer os direitos. */
+.destaque {
+  margin: 20px 0;
+  padding: 16px 18px;
+  border: 2px solid currentColor;
+  border-radius: 12px;
+}
+
+.destaque p:last-child {
+  margin-bottom: 0;
+}
+
+.tabela {
+  width: 100%;
+  margin: 12px 0 20px;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.tabela th,
+.tabela td {
+  padding: 9px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.28);
+  vertical-align: top;
+}
+
+.tabela th {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.rolagem {
+  overflow-x: auto;
+}
+
+/* Marca visualmente o que ainda não foi preenchido no lib/legal.js. */
+.pendente {
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: rgba(224, 62, 47, 0.14);
+  color: #c0392b;
+  font-size: 0.9em;
+  font-weight: 600;
+}

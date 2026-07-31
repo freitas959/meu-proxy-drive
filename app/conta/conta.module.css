@@ -1,0 +1,44 @@
+.nota {
+  font-size: 0.88rem !important;
+  opacity: 0.72;
+}
+
+/* Vermelho porque a ação é destrutiva e irreversível: o botão precisa parecer
+   diferente do "Baixar meus dados" logo acima. */
+.perigo {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+.perigo:hover:not(:disabled) {
+  background: #c0392b;
+  color: #fff;
+}
+
+.perigo:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.caixaPerigo {
+  border-color: #c0392b;
+}
+
+.caixaPerigo input {
+  margin: 10px 0 14px;
+}
+
+.botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.erro {
+  margin-top: 16px !important;
+  padding: 12px 14px;
+  border: 2px solid #c0392b;
+  border-radius: 10px;
+  color: #c0392b;
+  font-size: 0.9rem !important;
+}

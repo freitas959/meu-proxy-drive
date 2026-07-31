@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { EMPRESA } from "@/lib/legal";
 import { useRouter } from "next/navigation";
 import { buscarSaldo, getUsuarioAtual, ouvirSaldo, sair } from "@/lib/conta";
 import { temSupabase } from "@/lib/supabase/navegador";
@@ -250,8 +251,17 @@ export function Rodape() {
             com IA · seus projetos ficam salvos na sua conta.
           </span>
         </div>
+        {/* Em todas as páginas de propósito: política escondida não cumpre o
+            dever de transparência, e processador de pagamento exige as duas
+            acessíveis do site inteiro. */}
+        <nav className={s.footerLinks}>
+          <Link href="/termos">Termos de Uso</Link>
+          <Link href="/privacidade">Política de Privacidade</Link>
+          <Link href="/conta">Minha conta</Link>
+        </nav>
       </footer>
-      <a className={s.support} href="mailto:suporte@carrosseia.local">
+      {/* Endereço único, vindo do lib/legal.js: o mesmo que os Termos citam. */}
+      <a className={s.support} href={`mailto:${EMPRESA.suporte}`}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path
             d="M14 7.5c0 2.8-2.7 5-6 5-.7 0-1.4-.1-2-.3L2.5 13.5l.9-2.4C2.5 10.2 2 8.9 2 7.5c0-2.8 2.7-5 6-5s6 2.2 6 5z"

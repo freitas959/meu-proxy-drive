@@ -219,6 +219,28 @@ button.step:disabled {
   color: #fff;
 }
 
+.footerLinks {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 20px 26px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 22px;
+  font-size: 13px;
+}
+
+.footerLinks a {
+  color: #b9b2a7;
+  text-decoration: none;
+}
+
+.footerLinks a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
 .support {
   position: fixed;
   right: 20px;

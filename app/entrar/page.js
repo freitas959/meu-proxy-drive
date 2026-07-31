@@ -159,6 +159,10 @@ export default function Entrar() {
         {cadastro && (
           <p className={s.creditosNota}>
             Contas novas começam com 9 créditos. Um roteiro custa 3, uma capa da IA custa 10.
+            <br />
+            Ao criar a conta você concorda com os{" "}
+            <Link href="/termos">Termos de Uso</Link> e a{" "}
+            <Link href="/privacidade">Política de Privacidade</Link>.
           </p>
         )}
       </div>
