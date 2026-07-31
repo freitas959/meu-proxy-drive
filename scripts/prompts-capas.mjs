@@ -29,6 +29,36 @@ product and no essential detail may touch either edge.
 No text, letters, numbers, logos or watermarks anywhere in the image. No real
 or recognizable public figures.`;
 
+/**
+ * Variante para a única capa em que a cena pede escrita à mão visível.
+ *
+ * O Flash Image não escreve de verdade — ele desenha algo com aparência de
+ * escrita. A primeira capa de educação saiu com a lousa cheia de garrancho em
+ * inglês ("Shroaktrate revolution", "in basrriline"). A única tática que dá
+ * chance é pedir POUCAS palavras e GRANDES: duas palavras em letra de fôrma o
+ * modelo às vezes acerta, um quadro de anotações nunca.
+ *
+ * Se mesmo assim vier torto, o caminho é o `GEMINI_IMAGE_MODEL` apontando para
+ * um modelo Pro de imagem — desenhar texto é o diferencial dele. Exige
+ * faturamento ativo no Google.
+ */
+export const BLOCO_TECNICO_COM_TEXTO = `
+Vertical 4:5 composition. Photorealistic editorial photograph, full-frame
+camera, natural film grain.
+
+FRAMING: centre the main subject in the frame, at a comfortable distance —
+not a tight crop. Leave breathing room at the top and bottom edges: the top
+15% and the bottom 15% of the image are trimmed in layout, so no face, no
+product and no essential detail may touch either edge.
+
+The only writing allowed in the image is the Brazilian Portuguese wording
+described in the scene, in large clean handwriting. Spell it exactly as
+written. Nothing else may carry text: no other words, no notes, no numbers,
+no logos, no watermarks. No real or recognizable public figures.`;
+
+/** Ids que usam o bloco que permite escrita na cena. */
+const COM_TEXTO = new Set(["educacao-professores"]);
+
 export const PROMPTS = {
   insider: `A woman in her thirties sitting alone in a bare concrete studio, leaning back in a wooden chair, eyes closed, exhausted but composed. Loose sheets of paper suspended in mid-air around her, frozen in motion, concentrated in the upper half of the frame. Hard directional light from a single tall window on camera left, deep black shadows on the right. 35mm lens, slight motion blur on the papers. Desaturated grey and black grade.`,
 
@@ -56,7 +86,7 @@ export const PROMPTS = {
 
   "beleza-estetica": `A woman having her hair worked on in an upscale salon, seen through a mirror reflection, calm expression, warm lamps glowing behind her. 50mm f/1.8, shallow depth of field. Dusty rose and deep wine grade.`,
 
-  "educacao-professores": `A teacher mid-explanation in front of a class, gesturing with one hand, genuinely animated. Students in the foreground rendered as dark out-of-focus silhouettes. Warm morning light from side windows. 35mm. Chalk yellow highlights against a dark board.`,
+  "educacao-professores": `A teacher in her thirties mid-explanation in a bright modern classroom, gesturing with one hand, genuinely animated and smiling. Behind her a clean white board carrying only two large hand-written words in Brazilian Portuguese: "REVOLUÇÃO INDUSTRIAL" — nothing else written anywhere. Contemporary school interior: pale walls, big clean windows flooding the room with daylight, light wood furniture. Two students seen from behind in the foreground, softly out of focus, attentive. 35mm, airy and open. Bright natural colour, warm yellow accents, no gloom.`,
 
   hamburgueria: `A handmade burger shot from a high three-quarter angle, centred on a dark wooden board. Melted cheese spilling down the side, steam rising, sesame bun glistening under a hard warm light from camera left. 100mm macro, very shallow depth of field. Ember orange and burnt brown grade, the board falling into darkness at the edges.`,
 
@@ -72,13 +102,14 @@ export const PROMPTS = {
 
   "joias-semijoias": `A single fine gold chain draped over dark satin, one hard pin light raking across the metal creating a controlled specular highlight. 100mm macro, extreme shallow depth of field. Everything beyond the chain in complete black.`,
 
-  "prompt-claro": `An old mechanical typewriter on a cream-coloured table, three-quarter view, centred in the frame, one completely blank sheet of paper curling out of the roller. Soft overhead studio light, clean minimal set. 50mm. Warm cream and black palette, the empty table darkening toward the edges.`,
+  "prompt-claro": `Close-up of a pair of hands poised over a slim modern keyboard on a pale wooden desk, caught in the instant before typing, centred in the frame. Morning daylight from a window on camera left, clean airy minimal desk. 50mm f/1.8, sharp on the hands with the keys falling into soft bokeh so no character is legible. Warm cream, pale wood and soft shadow.`,
 
-  "prompt-escuro": `A single desk lamp switched on in a pitch-dark room, centred in the frame, its cone of cold light falling onto an empty desk. Everything else in near-total darkness. 35mm. Teal-tinted white light, black background.`,
+  "prompt-escuro": `Close-up of a pair of hands poised over a slim modern keyboard in a dark room at night, caught in the instant before typing, centred in the frame. The only light is a cold glow spilling from a screen just out of frame, catching the knuckles and the edges of the keys. 50mm f/1.8, sharp on the hands with the keys falling into soft bokeh so no character is legible. Teal-tinted light against near-total black.`,
 };
 
-/** O prompt completo, já com o bloco técnico. */
+/** O prompt completo, já com o bloco técnico que o template pedir. */
 export function promptDe(id) {
   const base = PROMPTS[id];
-  return base ? `${base}\n${BLOCO_TECNICO}` : null;
+  if (!base) return null;
+  return `${base}\n${COM_TEXTO.has(id) ? BLOCO_TECNICO_COM_TEXTO : BLOCO_TECNICO}`;
 }

@@ -89,6 +89,17 @@ apertado. Folga nas bordas: os 15% de cima e os 15% de baixo são descartados no
 layout, então nada essencial pode encostar neles. Nenhum texto, letra, número,
 logo ou marca d'água. Nenhuma pessoa real ou reconhecível.)*
 
+### A variante que permite escrita
+
+Existe um segundo bloco, o `BLOCO_TECNICO_COM_TEXTO`, usado hoje por **um único
+template**: `educacao-professores`, onde a lousa precisa ter palavra escrita. Ele
+troca o "nenhum texto" por "só o que a cena pedir, em português, grafado exatamente
+assim" — e mantém a proibição para todo o resto do quadro.
+
+Use com parcimônia. O Flash Image não escreve: ele desenha algo com aparência de
+escrita. Duas palavras grandes têm chance; uma lousa de anotações vira garrancho
+sempre. Quem escolhe o bloco é o `promptDe()`, pelo conjunto `COM_TEXTO`.
+
 O texto exato dos prompts vive em `scripts/prompts-capas.mjs`, e é de lá que o
 script lê. Os trechos abaixo servem para você entender cada escolha.
 
@@ -229,12 +240,25 @@ depth of field. Dusty rose and deep wine grade.
 
 ### educacao-professores — Educação / Professores
 ```
-A teacher mid-explanation in front of a class, gesturing with one hand,
-genuinely animated. Students in the foreground rendered as dark out-of-focus
-silhouettes. Warm morning light from side windows. 35mm. Chalk yellow
-highlights against a dark board.
+A teacher in her thirties mid-explanation in a bright modern classroom,
+gesturing with one hand, genuinely animated and smiling. Behind her a clean
+white board carrying only two large hand-written words in Brazilian
+Portuguese: "REVOLUÇÃO INDUSTRIAL" — nothing else written anywhere.
+Contemporary school interior: pale walls, big clean windows flooding the room
+with daylight, light wood furniture. Two students seen from behind in the
+foreground, softly out of focus, attentive. 35mm, airy and open. Bright
+natural colour, warm yellow accents, no gloom.
 ```
-*As silhuetas dos alunos criam a moldura escura embaixo naturalmente.*
+*A primeira versão pedia "luz de manhã" e "lousa escura" e saiu uma escola
+sombria, de fim de tarde, com a lousa coberta de garrancho em inglês. Refeito
+com escola contemporânea, claridade e madeira clara.*
+
+*Esta é **a única capa que usa o `BLOCO_TECNICO_COM_TEXTO`**, porque a cena
+pede escrita visível. Duas palavras grandes é o limite do que o Flash Image
+consegue: ele não escreve, desenha algo parecido com escrita, e quanto mais
+texto, mais garrancho. Se a lousa vier errada, gere 3 ou 4 variações e escolha
+— ou aponte o `GEMINI_IMAGE_MODEL` para um modelo Pro de imagem, que é o que
+desenha texto de verdade (exige faturamento ativo no Google).*
 
 ### turismo — Turismo
 ```
@@ -304,19 +328,31 @@ shallow depth of field. Everything beyond the chain in complete black.
 
 ### prompt-claro — Prompt · claro
 ```
-An old mechanical typewriter on a cream-coloured table, three-quarter view, one
-completely blank sheet of paper curling out of the roller. Soft overhead studio
-light, clean minimal set. 50mm. Warm cream and black palette, table surface
-darkening toward the bottom edge.
+Close-up of a pair of hands poised over a slim modern keyboard on a pale wooden
+desk, caught in the instant before typing, centred in the frame. Morning
+daylight from a window on camera left, clean airy minimal desk. 50mm f/1.8,
+sharp on the hands with the keys falling into soft bokeh so no character is
+legible. Warm cream, pale wood and soft shadow.
 ```
-*A folha tem que estar explicitamente em branco, senão vem garrancho.*
 
 ### prompt-escuro — Prompt · escuro
 ```
-A single desk lamp switched on in an otherwise pitch-dark room, its cone of
-cold light falling on an empty desk surface. Everything else in near-total
-darkness. 35mm. Teal-tinted white light, black background.
+Close-up of a pair of hands poised over a slim modern keyboard in a dark room
+at night, caught in the instant before typing, centred in the frame. The only
+light is a cold glow spilling from a screen just out of frame, catching the
+knuckles and the edges of the keys. 50mm f/1.8, sharp on the hands with the
+keys falling into soft bokeh so no character is legible. Teal-tinted light
+against near-total black.
 ```
+
+*Os dois eram máquina de escrever e abajur. Não diziam nada sobre prompt —
+máquina de escrever é o oposto de conversar com uma IA, e um foco de luz numa
+mesa vazia não é assunto nenhum. Agora são a mesma cena em dois climas: as mãos
+paradas em cima do teclado, no instante antes de escrever a instrução. Claro é
+manhã e madeira clara; escuro é noite e brilho de tela.*
+
+*As teclas ficam explicitamente em bokeh. Teclado tem letra em cada tecla, e
+tecla legível é convite para o modelo inventar caractere.*
 
 ## Sem capa
 
