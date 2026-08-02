@@ -13,7 +13,7 @@
   margin-bottom: 28px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--orange);
+  color: var(--orange-dark);
   text-decoration: none;
 }
 
@@ -66,7 +66,7 @@
 }
 
 .doc a {
-  color: var(--orange);
+  color: var(--orange-dark);
 }
 
 /* Chama atenção para o que o leitor mais procura: como exercer os direitos. */

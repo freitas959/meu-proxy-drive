@@ -1,19 +1,32 @@
+/* Tokens da marca Carrossê.
+ *
+ * Os nomes `--orange*` continuam por compatibilidade: são cerca de 40 usos
+ * espalhados, e renomear tudo de uma vez só embaralharia o diff do rebrand.
+ *
+ * REGRA DE CONTRASTE — vale para todo uso novo:
+ *   --orange (Vira) tem 3,6:1 sobre branco. Passa em componente de interface
+ *   (borda, foco, ícone: mínimo 3:1) e em texto grande, mas FALHA em texto
+ *   pequeno, que exige 4,5:1. Para fundo de botão com texto branco, ou para
+ *   texto abaixo de 24px, use --orange-dark.
+ *   --zest sempre com --ink por cima, nunca branco.
+ */
 :root {
-  --bg: #f2ede4;
+  --bg: #fdf2f6;
   --paper: #ffffff;
-  --ink: #111111;
-  --ink-60: #55504a;
-  --ink-40: #8a837a;
-  --orange: #ee5b2b;
-  --orange-dark: #d94a1c;
-  --orange-soft: #fdeee7;
-  --lime: #d8f34a;
+  --ink: #180f1a;
+  --ink-60: #3a2e35;
+  --ink-40: #6b5c63;
+  --orange: #ff2d6b;
+  --orange-dark: #c21050;
+  --orange-soft: #f6e9ef;
+  --swipe: #3d5aff;
+  --zest: #ffc93d;
   --radius: 10px;
   --shadow: 4px 4px 0 var(--ink);
   --shadow-sm: 3px 3px 0 var(--ink);
   --font-ui: "Familjen Grotesk", "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --font-display: "Anton", "Familjen Grotesk", Impact, sans-serif;
+  --font-display: "Archivo Black", "Familjen Grotesk", Impact, sans-serif;
 }
 
 * {
@@ -106,7 +119,7 @@ button {
 }
 
 .btn:hover:not(:disabled) {
-  background: #f8f4ec;
+  background: #faf1f5;
 }
 
 .btn:active:not(:disabled) {
@@ -119,13 +132,14 @@ button {
 }
 
 .btn-primary {
-  background: var(--orange);
+  /* Vira Escuro e não Vira: o rótulo é branco a 14-15px, e Vira daria 3,6:1. */
+  background: var(--orange-dark);
   color: #fff;
   box-shadow: var(--shadow);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--orange-dark);
+  background: #9d0a3f;
 }
 
 .btn-primary:active:not(:disabled) {
@@ -134,7 +148,7 @@ button {
 
 .btn-dashed {
   border: 2px dashed var(--orange);
-  color: var(--orange);
+  color: var(--orange-dark);
   background: var(--paper);
   font-weight: 700;
 }
@@ -203,7 +217,8 @@ textarea.field {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--orange);
+  /* 11px sobre fundo claro: precisa de 4,5:1, então é Vira Escuro. */
+  color: var(--orange-dark);
   background: var(--orange-soft);
 }
 
@@ -253,7 +268,7 @@ textarea.field {
 
 .divider-dashed {
   border: none;
-  border-top: 2px dashed #d8d2c6;
+  border-top: 2px dashed #ded0d7;
   margin: 22px 0;
 }
 

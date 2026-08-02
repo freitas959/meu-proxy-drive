@@ -179,7 +179,7 @@
 }
 
 .rascunho {
-  color: var(--orange);
+  color: var(--orange-dark);
 }
 
 .vazio {
@@ -217,7 +217,7 @@
   padding: 14px;
   display: grid;
   gap: 12px;
-  background: #fbf8f2;
+  background: #fcf4f8;
 }
 
 .papelNome {

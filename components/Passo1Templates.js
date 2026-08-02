@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { TEMPLATES, FUNDOS } from "@/lib/templates";
+import { textoSobre } from "@/lib/estilos";
 import { carregarCatalogo, filtrar } from "@/lib/catalogo";
 import CardCanvas from "./CardCanvas";
 import s from "@/app/app/wizard.module.css";
@@ -227,7 +228,7 @@ export default function Passo1Templates({ onEscolher }) {
               {template.nicho && (
                 <span
                   className={s.cardNicho}
-                  style={{ background: template.nicho.cor }}
+                  style={{ background: template.nicho.cor, color: textoSobre(template.nicho.cor) }}
                 >
                   {template.nicho.label}
                 </span>

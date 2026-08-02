@@ -83,7 +83,7 @@
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.06em;
-  color: #111;
+  /* A cor do texto vem do componente, calculada pelo brilho do fundo. */
 }
 
 .cardNome {
@@ -143,7 +143,7 @@
   width: fit-content;
   margin: 0 auto 18px;
   border-radius: 999px;
-  background: var(--lime);
+  background: var(--zest);
   border: 2px solid var(--ink);
   padding: 6px 20px;
   font-size: 14px;
@@ -152,7 +152,7 @@
 
 .modalPalco {
   position: relative;
-  background: #efeae1;
+  background: #f3e7ed;
   border-radius: 10px;
   padding: 18px 52px;
   display: grid;
@@ -206,7 +206,7 @@
 }
 
 .miniaturaAtiva {
-  border-color: var(--lime);
+  border-color: var(--orange);
   box-shadow: 0 0 0 2px var(--ink);
 }
 
@@ -316,7 +316,7 @@
   place-items: center;
   padding: 0 14px;
   border-right: 2px solid var(--ink);
-  background: #f6f2ea;
+  background: #f8eef3;
 }
 
 .contadorBtn {
@@ -328,7 +328,7 @@
 }
 
 .contadorBtn:hover:not(:disabled) {
-  background: #f2ede4;
+  background: #f6e9ef;
 }
 
 .contadorBtn:disabled {
@@ -355,7 +355,7 @@
   position: relative;
   width: 78px;
   height: 96px;
-  border: 2px dashed #b9b2a5;
+  border: 2px dashed #c2b0ba;
   border-radius: 8px;
   background: var(--paper);
   display: grid;
@@ -368,7 +368,7 @@
 
 .quadradinho:hover {
   border-color: var(--orange);
-  color: var(--orange);
+  color: var(--orange-dark);
 }
 
 .quadradinhoNum {
@@ -443,7 +443,7 @@
 }
 
 .capaBtnAtivo {
-  background: var(--orange);
+  background: var(--orange-dark);
   color: #fff;
 }
 
@@ -460,7 +460,7 @@
 }
 
 .estiloBtnAtivo {
-  background: var(--orange);
+  background: var(--orange-dark);
   color: #fff;
 }
 
@@ -497,12 +497,12 @@
   border-radius: 999px;
   padding: 5px 12px;
   font-size: 13px;
-  background: #f6f2ea;
+  background: #f8eef3;
 }
 
 .zonaColagem {
   margin-top: 12px;
-  border: 2px dashed #c9c2b4;
+  border: 2px dashed #d2c1ca;
   border-radius: 8px;
   padding: 14px;
   font-size: 13px;
@@ -548,7 +548,7 @@
 
 .selo {
   border-radius: 5px;
-  background: var(--orange);
+  background: var(--orange-dark);
   color: #fff;
   padding: 3px 9px;
   font-family: var(--font-mono);
@@ -575,7 +575,7 @@
 }
 
 .tamanhoBtnAtivo {
-  background: var(--orange);
+  background: var(--orange-dark);
   color: #fff;
 }
 
@@ -661,7 +661,7 @@
 .fonteUpload {
   border: 2px solid var(--ink);
   border-radius: 8px;
-  background: var(--orange);
+  background: var(--orange-dark);
   color: #fff;
   padding: 10px 14px;
   font-size: 14px;
@@ -689,7 +689,7 @@
   align-items: center;
   gap: 11px;
   padding: 11px 14px;
-  background: #f6f2ea;
+  background: #f8eef3;
   border-bottom: 2px solid var(--ink);
 }
 
@@ -708,7 +708,7 @@
 }
 
 .cardRoteiroCapa .cardRoteiroNum {
-  background: var(--orange);
+  background: var(--orange-dark);
 }
 
 .cardRoteiroTipo {
@@ -790,7 +790,7 @@
 }
 
 .detalhes {
-  border-top: 2px dashed #ddd6c8;
+  border-top: 2px dashed #e0d0d8;
   padding-top: 12px;
   margin-top: 2px;
 }
@@ -861,7 +861,7 @@ details[open] > .detalhesResumo::before {
 }
 
 .slotBaixar:hover:not(:disabled) {
-  background: #f6f2ea;
+  background: #f8eef3;
 }
 
 .slotBaixar:disabled {
@@ -979,7 +979,7 @@ details[open] > .detalhesResumo::before {
   height: 44px;
   border-radius: 50%;
   border: 2px solid var(--ink);
-  background: #d9d3c8;
+  background: #ded0d7;
   color: var(--ink-60);
   display: grid;
   place-items: center;

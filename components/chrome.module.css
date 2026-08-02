@@ -58,7 +58,7 @@
 }
 
 .navBtn:hover {
-  background: #f8f4ec;
+  background: #faf1f5;
 }
 
 .navBtn[aria-current="page"] {
@@ -148,8 +148,8 @@
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 700;
-  background: #d6d0c4;
-  color: #7d776e;
+  background: #e3d5dc;
+  color: #4a3c43;
   flex: none;
 }
 
@@ -163,7 +163,7 @@
 }
 
 .stepActive .stepBullet {
-  background: var(--orange);
+  background: var(--orange-dark);
   color: #fff;
   box-shadow: 0 0 0 4px var(--orange-soft);
 }
@@ -176,7 +176,7 @@
 .stepLine {
   flex: 1 1 auto;
   height: 2px;
-  background: #cec8bb;
+  background: #d9c9d1;
   margin: 0 14px;
   min-width: 30px;
 }
@@ -198,7 +198,7 @@ button.step:disabled {
 .footer {
   margin-top: 56px;
   background: var(--ink);
-  color: #e8e3da;
+  color: #e9dde3;
 }
 
 .footerInner {
@@ -249,7 +249,9 @@ button.step:disabled {
   align-items: center;
   gap: 8px;
   border-radius: 999px;
-  background: #1fbf6b;
+  /* Era #1fbf6b, que dava 2,41:1 com texto branco — a pior falha da auditoria.
+     Este verde mantém a leitura de "WhatsApp" e passa de 4,5:1. */
+  background: #0b7a45;
   color: #fff;
   padding: 12px 20px;
   font-size: 14px;
@@ -259,7 +261,7 @@ button.step:disabled {
 }
 
 .support:hover {
-  background: #17a85c;
+  background: #096237;
 }
 
 @media (max-width: 860px) {
@@ -283,7 +285,7 @@ button.step:disabled {
 .navBtnDestaque {
   border-style: dashed;
   border-color: var(--orange);
-  color: var(--orange);
+  color: var(--orange-dark);
   font-weight: 700;
 }
 

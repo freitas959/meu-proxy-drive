@@ -35,7 +35,7 @@
 }
 
 .fechar:hover {
-  background: #f2ede4;
+  background: #f6e9ef;
 }
 
 .titulo {
@@ -86,7 +86,7 @@
 .info {
   border-top: 2px solid var(--ink);
   padding: 11px 12px 9px;
-  background: #f6f2ea;
+  background: #f8eef3;
 }
 
 .nome {
@@ -118,7 +118,7 @@
 }
 
 .abrir:hover {
-  background: #f2ede4;
+  background: #f6e9ef;
 }
 
 .icone {
@@ -131,7 +131,7 @@
 }
 
 .icone:hover {
-  background: #f2ede4;
+  background: #f6e9ef;
 }
 
 .iconeApagar:hover {
@@ -205,7 +205,7 @@
   padding: 46px 20px;
   text-align: center;
   color: var(--ink-60);
-  border: 2px dashed #cdc6b8;
+  border: 2px dashed #d6c5ce;
   border-radius: var(--radius);
 }
 
