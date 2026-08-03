@@ -37,7 +37,7 @@ export default function Conta() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `carrosseia-meus-dados-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `carrosse-meus-dados-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (falha) {

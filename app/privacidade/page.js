@@ -5,8 +5,8 @@ import { EMPRESA, NOME_APP, ATUALIZADO_EM, SUBPROCESSADORES } from "@/lib/legal"
 import g from "../legal.module.css";
 
 export const metadata = {
-  title: "Política de Privacidade · CarrosseIA",
-  description: "Como o CarrosseIA trata seus dados pessoais, conforme a LGPD.",
+  title: "Política de Privacidade · Carrossê",
+  description: "Como o Carrossê trata seus dados pessoais, conforme a LGPD.",
 };
 
 export default function Privacidade() {

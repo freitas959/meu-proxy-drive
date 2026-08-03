@@ -40,7 +40,7 @@ export async function GET() {
       "As imagens dos cards ficam guardadas no seu próprio navegador e por isso não entram nesta exportação. Para guardá-las, abra o projeto e baixe as artes.",
   };
 
-  const nome = `carrosseia-meus-dados-${new Date().toISOString().slice(0, 10)}.json`;
+  const nome = `carrosse-meus-dados-${new Date().toISOString().slice(0, 10)}.json`;
   return new Response(JSON.stringify(pacote, null, 2), {
     headers: {
       "Content-Type": "application/json; charset=utf-8",

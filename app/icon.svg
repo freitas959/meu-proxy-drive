@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Símbolo Carrossê: anel de 270° com seta, inclinado -8°. Cor fixa Vira
+       (#ff2d6b) porque favicon não herda cor de CSS. -->
+  <g transform="rotate(-8 50 50)">
+    <path d="M 84,50 A 34,34 0 1 1 50,16" fill="none" stroke="#ff2d6b" stroke-width="16" stroke-linecap="butt"/>
+    <polygon points="50,8 50,24 68,16" fill="#ff2d6b"/>
+  </g>
+</svg>

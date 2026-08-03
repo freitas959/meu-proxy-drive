@@ -6,32 +6,8 @@ import { EMPRESA } from "@/lib/legal";
 import { useRouter } from "next/navigation";
 import { buscarSaldo, getUsuarioAtual, ouvirSaldo, sair } from "@/lib/conta";
 import { temSupabase } from "@/lib/supabase/navegador";
+import Simbolo from "./Simbolo";
 import s from "./chrome.module.css";
-
-function Marca() {
-  return (
-    <svg
-      className={s.brandMark}
-      width="28"
-      height="28"
-      viewBox="0 0 28 28"
-      aria-hidden="true"
-    >
-      <rect width="28" height="28" rx="7" fill="var(--orange)" />
-      <rect x="7" y="6" width="9" height="16" rx="1.5" fill="#fff" />
-      <rect
-        x="17"
-        y="8"
-        width="4.5"
-        height="12"
-        rx="1.5"
-        fill="#fff"
-        opacity="0.55"
-      />
-      <path d="M9.5 6h4.5v7l-2.25-1.7L9.5 13V6z" fill="var(--orange)" />
-    </svg>
-  );
-}
 
 function IconeDiamante() {
   return (
@@ -310,10 +286,10 @@ export function Cabecalho({ paginaAtual, onProjetos }) {
     <header className={s.header}>
       <div className={s.headerInner}>
         <Link href="/app" className={s.brand}>
-          <Marca />
+          <Simbolo tamanho={28} cor="var(--orange)" className={s.brandMark} />
           <span>
-            <span className={s.brandStrong}>Carrosse</span>
-            <span className={s.brandLight}>IA</span>
+            <span className={s.brandStrong}>Carross</span>
+            <span className={s.brandLight}>ê</span>
           </span>
         </Link>
 
@@ -409,9 +385,9 @@ export function Rodape() {
     <>
       <footer className={s.footer}>
         <div className={s.footerInner}>
-          <Marca />
+          <Simbolo tamanho={24} cor="var(--orange)" />
           <span>
-            <span className={s.footerBrand}>Carrosseia</span> · carrosséis de
+            <span className={s.footerBrand}>Carrossê</span> · carrosséis de
             Instagram com IA · seus projetos ficam salvos na sua conta.
           </span>
         </div>

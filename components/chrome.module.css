@@ -33,8 +33,12 @@
   font-weight: 700;
 }
 
+/* O "ê" carrega a cor de assinatura — é o que amarra a palavra ao símbolo.
+   Fica em Vira mesmo: são 21px em peso 700, texto grande pela régua da WCAG,
+   onde o mínimo é 3:1 e Vira dá 3,6:1. */
 .brandLight {
-  font-weight: 400;
+  font-weight: 700;
+  color: var(--orange);
 }
 
 .nav {

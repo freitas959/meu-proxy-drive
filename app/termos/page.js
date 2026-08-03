@@ -5,8 +5,8 @@ import { EMPRESA, NOME_APP, ATUALIZADO_EM } from "@/lib/legal";
 import g from "../legal.module.css";
 
 export const metadata = {
-  title: "Termos de Uso · CarrosseIA",
-  description: "As regras de uso do CarrosseIA.",
+  title: "Termos de Uso · Carrossê",
+  description: "As regras de uso do Carrossê.",
 };
 
 export default function Termos() {

@@ -38,7 +38,7 @@ export async function POST(req) {
       signal: controle.signal,
       redirect: "follow",
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; CarrosseIA/1.0)",
+        "User-Agent": "Mozilla/5.0 (compatible; Carrosse/1.0)",
         Accept: "text/html,application/xhtml+xml",
       },
     }).finally(() => clearTimeout(limite));

@@ -145,7 +145,7 @@ export default function NovaSenha() {
         <div className={s.marca}>
           <Marca />
           <span>
-            Carrosse<span className={s.marcaLeve}>IA</span>
+            Carross<span className={s.marcaLeve}>ê</span>
           </span>
         </div>
 

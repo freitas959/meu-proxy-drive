@@ -31,7 +31,7 @@ const PASSOS = [
 ];
 
 export const metadata = {
-  title: "Aprendizado · CarrosseIA",
+  title: "Aprendizado · Carrossê",
   description: "Como tirar o melhor do gerador de carrosséis.",
 };
 
