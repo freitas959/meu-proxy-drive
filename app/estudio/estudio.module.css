@@ -1,5 +1,8 @@
 .pagina {
-  padding: 34px 0 60px;
+  /* Só vertical: o horizontal vem do `.wrap`, e o atalho o zeraria —
+     este módulo carrega depois do globals.css e venceria. */
+  padding-top: 34px;
+  padding-bottom: 60px;
 }
 
 .topo {
