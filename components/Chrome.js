@@ -345,6 +345,25 @@ const PASSOS = ["Templates", "Tema", "Roteiro", "Imagens"];
 export function Trilha({ atual, onIr, maxAlcancado = 1 }) {
   return (
     <div className={s.stepper}>
+      {/* Versão de tela estreita: as quatro etiquetas não cabem em 390px sem
+          rolagem lateral, e rolagem horizontal escondida é rolagem que ninguém
+          descobre. Some acima de 560px, onde a trilha inteira cabe. */}
+      <div className={s.stepperCompacto}>
+        <p className={s.stepperCompactoTexto}>
+          Passo {atual} de {PASSOS.length} · <strong>{PASSOS[atual - 1]}</strong>
+        </p>
+        <div
+          className={s.stepperBarra}
+          role="progressbar"
+          aria-valuenow={atual}
+          aria-valuemin={1}
+          aria-valuemax={PASSOS.length}
+          aria-label={`Passo ${atual} de ${PASSOS.length}: ${PASSOS[atual - 1]}`}
+        >
+          <span style={{ width: `${(atual / PASSOS.length) * 100}%` }} />
+        </div>
+      </div>
+
       <div className={s.stepperInner}>
         {PASSOS.map((rotulo, i) => {
           const numero = i + 1;

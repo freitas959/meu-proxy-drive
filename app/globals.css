@@ -298,3 +298,12 @@ textarea.field {
     width: 100%;
   }
 }
+
+/* Abaixo de 560px a trilha compacta já mostra "Passo X de 4 · nome" logo acima.
+   Manter a pílula seria dizer a mesma coisa duas vezes, numa tela em que cada
+   linha custa caro. */
+@media (max-width: 560px) {
+  .step-pill {
+    display: none;
+  }
+}

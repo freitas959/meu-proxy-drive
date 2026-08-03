@@ -223,3 +223,15 @@
   gap: 18px;
   margin-top: 50px;
 }
+
+/* Abaixo de 560px, um `minmax(230px)` ainda cabe duas vezes — e como estes
+   grupos têm três itens (planos, recursos), o terceiro fica órfão em meia
+   largura com um vazio do lado. Uma coluna só resolve. Não há media query
+   nenhuma neste arquivo hoje; esta é a primeira. */
+@media (max-width: 560px) {
+  .planos,
+  .recursos,
+  .grade {
+    grid-template-columns: 1fr;
+  }
+}

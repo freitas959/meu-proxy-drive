@@ -129,6 +129,43 @@
   min-width: 640px;
 }
 
+/* Versão compacta: só existe abaixo de 560px. */
+.stepperCompacto {
+  display: none;
+  padding: 12px 20px 14px;
+}
+
+.stepperCompactoTexto {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--ink-60);
+}
+
+.stepperCompactoTexto strong {
+  color: var(--ink);
+}
+
+.stepperBarra {
+  height: 4px;
+  border-radius: 999px;
+  background: #e3d5dc;
+  overflow: hidden;
+}
+
+.stepperBarra span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--orange);
+  transition: width 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stepperBarra span {
+    transition: none;
+  }
+}
+
 .step {
   display: inline-flex;
   align-items: center;
@@ -349,6 +386,22 @@ button.step:disabled {
   /* "feito com Claude" é assinatura, não navegação: some primeiro. */
   .madeWith {
     display: none;
+  }
+}
+
+/* A trilha inteira precisa de 640px. Abaixo disso ela virava rolagem lateral
+   dentro do cabeçalho — que quase ninguém percebe que existe. */
+@media (max-width: 560px) {
+  .stepperInner {
+    display: none;
+  }
+
+  .stepperCompacto {
+    display: block;
+  }
+
+  .stepper {
+    overflow-x: visible;
   }
 }
 
