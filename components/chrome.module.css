@@ -264,19 +264,91 @@ button.step:disabled {
   background: #096237;
 }
 
+/* ---------- menu de telas estreitas ---------- */
+
+/* Escondido no desktop: ali a barra de navegação já mostra tudo. */
+.menuBtn {
+  display: none;
+  width: 38px;
+  height: 38px;
+  border: 2px solid var(--ink);
+  border-radius: 9px;
+  background: var(--paper);
+  place-items: center;
+  color: var(--ink);
+}
+
+.gavetaFundo {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(24, 15, 26, 0.55);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.gaveta {
+  width: min(310px, 86vw);
+  height: 100%;
+  background: var(--bg);
+  border-left: 2px solid var(--ink);
+  padding: 18px 18px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.gavetaFechar {
+  align-self: flex-end;
+  border: 2px solid var(--ink);
+  border-radius: 9px;
+  background: var(--paper);
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Um item por linha, ocupando a largura: alvo de toque grande e ordem óbvia. */
+.gavetaItens {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gavetaItens > * {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 12px 14px;
+  font-size: 15px;
+}
+
 @media (max-width: 860px) {
-  .brand {
-    margin-right: 0;
-  }
-
-  .headerInner {
-    justify-content: center;
-  }
-
   .support {
     right: 12px;
     bottom: 12px;
     padding: 10px 16px;
+  }
+}
+
+/* Antes deste ponto os seis botões de navegação empilhavam e empurravam o
+   conteúdo da página para baixo da dobra, em todas as telas. */
+@media (max-width: 760px) {
+  .nav {
+    display: none;
+  }
+
+  .menuBtn {
+    display: grid;
+  }
+
+  .brand {
+    font-size: 19px;
+  }
+
+  /* "feito com Claude" é assinatura, não navegação: some primeiro. */
+  .madeWith {
+    display: none;
   }
 }
 
